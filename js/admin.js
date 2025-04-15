@@ -389,56 +389,6 @@ function deleteAppointment(id) {
     );
 }
 
-// Nouvelle fonction à ajouter dans admin.js
-function initAvailabilitySection() {
-    // Créer un calendrier interactif pour sélectionner les jours
-    const calendar = document.getElementById('availability-calendar');
-    
-    // Permettre de définir des plages horaires pour chaque jour
-    const timeSlots = document.getElementById('time-slots');
-    
-    // Sauvegarder les disponibilités
-    document.getElementById('save-availability-btn').addEventListener('click', function() {
-        // Collecter toutes les disponibilités sélectionnées
-        const availabilityData = collectAvailabilityData();
-        
-        // Sauvegarder dans localStorage (ou une base de données dans une version future)
-        localStorage.setItem('availability', JSON.stringify(availabilityData));
-        
-        // Afficher un message de confirmation
-        alert('Vos disponibilités ont été enregistrées avec succès !');
-    });
-    
-    // Charger les disponibilités existantes
-    loadSavedAvailability();
-}
-
-// Fonction pour collecter les données de disponibilité
-function collectAvailabilityData() {
-    const availabilityData = [];
-    
-    // Récupérer les jours sélectionnés et leurs horaires
-    const selectedDays = document.querySelectorAll('.day-selected');
-    
-    selectedDays.forEach(day => {
-        const date = day.dataset.date;
-        const timeSlots = document.querySelectorAll(`[data-date="${date}"] .time-slot:checked`);
-        
-        const slots = Array.from(timeSlots).map(slot => ({
-            start: slot.dataset.start,
-            end: slot.dataset.end
-        }));
-        
-        availabilityData.push({
-            date: date,
-            available: true,
-            slots: slots
-        });
-    });
-    
-    return availabilityData;
-}
-
 function viewAppointmentDetails(id) {
     const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
     const reservation = reservations[id];
