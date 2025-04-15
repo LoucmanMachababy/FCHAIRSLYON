@@ -158,6 +158,50 @@ function populateServiceSelect() {
     }
 }
 
+// Modifier la fonction existante dans script.js
+function populateAvailableDates() {
+    // Charger les disponibilités définies par l'admin
+    const availabilityData = JSON.parse(localStorage.getItem('availability')) || [];
+    
+    // Filtrer pour n'avoir que les dates futures
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const availableDates = availabilityData.filter(item => {
+        const itemDate = new Date(item.date);
+        return itemDate >= today && item.available === true;
+    });
+    
+    // Mettre à jour le sélecteur de date dans le formulaire de réservation
+    const dateSelect = document.getElementById('date-input');
+    
+    // Désactiver toutes les dates par défaut
+    dateSelect.setAttribute('disabled', 'true');
+    
+    // Ajouter les dates disponibles
+    if (availableDates.length > 0) {
+        dateSelect.removeAttribute('disabled');
+        
+        // Permettre la sélection uniquement des dates disponibles
+        dateSelect.addEventListener('input', function(e) {
+            const selectedDate = e.target.value;
+            if (!availableDates.some(d => d.date === selectedDate)) {
+                e.target.value = '';
+                alert('Cette date n\'est pas disponible. Veuillez choisir une autre date.');
+            } else {
+                // Mettre à jour les créneaux horaires disponibles
+                updateAvailableTimeSlots(selectedDate);
+            }
+        });
+    } else {
+        // Aucune disponibilité définie
+        const message = document.createElement('p');
+        message.className = 'no-availability';
+        message.textContent = 'Aucune disponibilité pour le moment. Veuillez réessayer ultérieurement.';
+        dateSelect.parentNode.appendChild(message);
+    }
+}
+
 function updateModelSelect(service, category) {
     // Vider les options actuelles
     modelSelect.innerHTML = '<option value="" disabled selected>Choisissez un modèle</option>';
@@ -552,6 +596,219 @@ function initEventListeners() {
     document.getElementById('date-input').min = today;
     document.getElementById('date-input').value = today;
 }
+
+// Modifications à ajouter à votre fichier script.js existant
+
+// Fonction modifiée pour tenir compte des disponibilités de l'administratrice
+function updateDateAndTimeInputs() {
+    // Récupérer les disponibilités définies par l'admin
+    const availabilityData = JSON.parse(localStorage.getItem('availability')) || {};
+    
+    // Configurer le champ de date
+    const dateInput = document.getElementById('date-input');
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Assurer que la date minimale est aujourd'hui
+    dateInput.min = today.toISOString().split('T')[0];
+    
+    // Ajouter un écouteur pour la sélection de date
+    dateInput.addEventListener('change', function() {
+        const selectedDate = this.value;
+        
+        // Vérifier si cette date est disponible
+        if (availabilityData[selectedDate] && availabilityData[selectedDate].available) {
+            // Mettre à jour les heures disponibles
+            updateAvailableHours(selectedDate, availabilityData[selectedDate].slots);
+        } else {
+            // Date non disponible ou non définie
+            const timeInput = document.getElementById('time-input');
+            timeInput.innerHTML = '<option value="" disabled selected>Aucun créneau disponible à cette date</option>';
+            timeInput.disabled = true;
+            
+            // Afficher un message si la date a été explicitement marquée comme indisponible
+            if (availabilityData[selectedDate] && !availabilityData[selectedDate].available) {
+                alert('Désolé, il n\'y a pas de disponibilité à cette date. Veuillez choisir une autre date.');
+                this.value = '';
+            }
+        }
+    });
+}
+
+// Fonction pour mettre à jour les heures disponibles
+function updateAvailableHours(date, slots) {
+    const timeInput = document.getElementById('time-input');
+    
+    // Si aucun créneau défini, utiliser les heures d'ouverture par défaut
+    if (!slots || slots.length === 0) {
+        // Heures par défaut (9h-18h par tranches de 30 minutes)
+        const defaultSlots = [];
+        for (let hour = 9; hour < 18; hour++) {
+            for (let minute = 0; minute < 60; minute += 30) {
+                const time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                defaultSlots.push(time);
+            }
+        }
+        
+        populateTimeOptions(timeInput, defaultSlots);
+    } else {
+        // Utiliser les créneaux définis par l'admin
+        const availableTimes = [];
+        
+        slots.forEach(slot => {
+            // Convertir les heures de début et de fin en minutes
+            const startParts = slot.start.split(':');
+            const endParts = slot.end.split(':');
+            
+            const startMinutes = parseInt(startParts[0]) * 60 + parseInt(startParts[1]);
+            const endMinutes = parseInt(endParts[0]) * 60 + parseInt(endParts[1]);
+            
+            // Générer des créneaux de 30 minutes
+            for (let time = startMinutes; time < endMinutes; time += 30) {
+                const hour = Math.floor(time / 60);
+                const minute = time % 60;
+                const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                
+                availableTimes.push(timeStr);
+            }
+        });
+        
+        populateTimeOptions(timeInput, availableTimes);
+    }
+}
+
+// Fonction pour remplir les options d'heure
+function populateTimeOptions(timeInput, times) {
+    // Vérifier s'il y a des créneaux disponibles
+    if (times.length === 0) {
+        timeInput.innerHTML = '<option value="" disabled selected>Aucun créneau disponible</option>';
+        timeInput.disabled = true;
+        return;
+    }
+    
+    // Activer le champ
+    timeInput.disabled = false;
+    
+    // Vider les options actuelles
+    timeInput.innerHTML = '<option value="" disabled selected>Choisissez une heure</option>';
+    
+    // Vérifier s'il y a des rendez-vous existants pour éviter les chevauchements
+    const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+    const selectedDate = document.getElementById('date-input').value;
+    
+    // Ajouter les options d'heure
+    times.forEach(time => {
+        // Vérifier si ce créneau chevauche un rendez-vous existant
+        const isOverlapping = checkTimeOverlap(selectedDate, time, reservations);
+        
+        if (!isOverlapping) {
+            const option = document.createElement('option');
+            option.value = time;
+            
+            // Formater l'heure pour l'affichage (par exemple, 14:30 -> 14h30)
+            const timeParts = time.split(':');
+            option.textContent = `${timeParts[0]}h${timeParts[1]}`;
+            
+            timeInput.appendChild(option);
+        }
+    });
+    
+    // Vérifier si des créneaux sont disponibles après filtrage
+    if (timeInput.options.length <= 1) {
+        timeInput.innerHTML = '<option value="" disabled selected>Aucun créneau disponible</option>';
+        timeInput.disabled = true;
+    }
+}
+
+// Fonction pour vérifier si un créneau chevauche avec des rendez-vous existants
+function checkTimeOverlap(date, time, reservations) {
+    const selectedDateTime = new Date(`${date}T${time}`);
+    
+    // Estimer la durée du service sélectionné (pour simplifier, on utilise 1 heure fixe)
+    const serviceDuration = 60; // minutes
+    const endTime = new Date(selectedDateTime.getTime() + serviceDuration * 60000);
+    
+    return reservations.some(res => {
+        if (res.status === 'cancelled') return false;
+        
+        const resDate = new Date(res.dateTime);
+        
+        // Estimer la durée de ce rendez-vous
+        let resDuration = 60; // Durée par défaut: 1 heure
+        
+        // Calculer la durée en fonction du service et du modèle
+        if (res.service === 'Braids' || res.service === 'Twist') {
+            if (res.model === 'court') resDuration = 120; // 2 heures
+            else if (res.model === 'moyen') resDuration = 180; // 3 heures
+            else if (res.model === 'long') resDuration = 240; // 4 heures
+        } else if (res.service === 'Fulani Braids') {
+            if (res.model === 'court') resDuration = 150; // 2.5 heures
+            else if (res.model === 'moyen') resDuration = 210; // 3.5 heures
+            else if (res.model === 'long') resDuration = 270; // 4.5 heures
+        } else if (res.service === 'Invisible Locs') {
+            if (res.model === 'moyen') resDuration = 180; // 3 heures
+            else if (res.model === 'long') resDuration = 240; // 4 heures
+        }
+        
+        const resEndTime = new Date(resDate.getTime() + resDuration * 60000);
+        
+        // Vérifier si les rendez-vous se chevauchent
+        return (selectedDateTime < resEndTime && endTime > resDate);
+    });
+}
+
+// Nouvelle fonction pour filtrer les dates disponibles dans le calendrier
+function highlightAvailableDates() {
+    // Récupérer le champ de date
+    const dateInput = document.getElementById('date-input');
+    
+    // Récupérer les disponibilités
+    const availabilityData = JSON.parse(localStorage.getItem('availability')) || {};
+    
+    // Créer un objet Date pour aujourd'hui
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Filtrer les dates disponibles (celles explicitement marquées comme available)
+    const availableDates = Object.keys(availabilityData).filter(dateKey => {
+        const date = new Date(dateKey);
+        return date >= today && availabilityData[dateKey].available;
+    });
+    
+    // Si aucune date n'est disponible, afficher un message
+    if (availableDates.length === 0) {
+        const message = document.createElement('p');
+        message.className = 'no-availability';
+        message.textContent = 'Aucune disponibilité n\'a été définie. Veuillez réessayer ultérieurement.';
+        
+        // Insérer le message après le champ de date
+        dateInput.parentNode.appendChild(message);
+        
+        // Désactiver le champ de date
+        dateInput.disabled = true;
+    }
+    
+    // Ajouter un indicateur visuel à côté du champ de date
+    const dateInfo = document.createElement('div');
+    dateInfo.className = 'date-info';
+    dateInfo.innerHTML = '<i class="fas fa-info-circle"></i> Seules les dates disponibles peuvent être sélectionnées';
+    
+    // Insérer l'info après le champ de date
+    dateInput.parentNode.appendChild(dateInfo);
+}
+
+// Remplacer ou modifier l'initialisation existante pour inclure la vérification des disponibilités
+function init() {
+    renderServices();
+    populateServiceSelect();
+    initEventListeners();
+    displayReservations();
+    updateDateAndTimeInputs(); // Nouvelle fonction pour gérer les disponibilités
+    highlightAvailableDates(); // Ajouter les indicateurs visuels
+}
+
+// Assurez-vous que cette fonction est appelée au chargement de la page
+document.addEventListener('DOMContentLoaded', init);
 
 // Initialisation de l'application
 function init() {

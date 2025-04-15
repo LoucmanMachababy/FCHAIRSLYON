@@ -769,4 +769,115 @@ footer {
         width: 100%;
     }
 }
+
+/* Ajoutez ces styles à votre fichier CSS client (style.css) */
+
+/* Styles pour les informations de disponibilité */
+.date-info {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.date-info i {
+    margin-right: 5px;
+    color: var(--primary-dark);
+}
+
+.no-availability {
+    text-align: center;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    margin-top: 10px;
+    color: #666;
+    font-style: italic;
+}
+
+/* Style pour mettre en évidence le calendrier et l'heure */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+    background-color: var(--primary);
+    padding: 5px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+/* Style pour le select des heures quand il est désactivé */
+select:disabled {
+    background-color: #f5f5f5;
+    color: #999;
+    border-color: #ddd;
+}
+
+/* Style pour afficher un message explicatif */
+.availability-message {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-left: 4px solid var(--primary);
+    border-radius: 0 5px 5px 0;
+}
+
+.availability-message h4 {
+    color: var(--secondary);
+    margin-bottom: 10px;
+}
+
+.availability-message p {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* Style pour le message indiquant qu'aucun créneau n'est disponible */
+.form-group .empty-message {
+    display: block;
+    padding: 10px;
+    text-align: center;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    margin-top: 5px;
+    color: #666;
+}
+
+/* Ajouter un effet d'animation sur les boutons de réservation */
+.form-button {
+    position: relative;
+    overflow: hidden;
+}
+
+.form-button::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    border-radius: 100%;
+    transform: scale(1, 1) translate(-50%);
+    transform-origin: 50% 50%;
+}
+
+.form-button:focus:not(:active)::after {
+    animation: ripple 1s ease-out;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(0, 0);
+        opacity: 0.5;
+    }
+    20% {
+        transform: scale(25, 25);
+        opacity: 0.3;
+    }
+    100% {
+        opacity: 0;
+        transform: scale(40, 40);
+    }
+}
 }
