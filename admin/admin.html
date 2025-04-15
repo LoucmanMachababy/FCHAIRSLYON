@@ -544,31 +544,215 @@
                             </div>
                             
                             <div class="form-group">
-                                <label class="form-label">Nouveau
-
-                                    <button class="btn btn-primary" id="confirm-no-btn">Annuler</button>
-                                </div>
+                                <label class="form-label">Nouveau mot de passe</label>
+                                <input type="password" class="form-input" id="admin-new-password">
                             </div>
                         </div>
                         
-                        <!-- Modal Détails du rendez-vous -->
-                        <div class="modal" id="details-modal">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h3 class="modal-title">Détails du rendez-vous</h3>
-                                    <button class="modal-close">&times;</button>
-                                </div>
-                                <div class="modal-body" id="details-content">
-                                    <!-- Contenu des détails inséré dynamiquement -->
-                                </div>
-                                <div class="modal-footer">
-                                    <button class="btn btn-primary" id="details-close-btn">Fermer</button>
-                                </div>
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </div>
+    
+    <!-- Modal Ajout/Édition de rendez-vous -->
+    <div class="modal" id="appointment-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="appointment-modal-title">Ajouter un rendez-vous</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="appointment-form">
+                    <input type="hidden" id="appointment-id">
+                    
+                    <div class="form-group">
+                        <label class="form-label">Client</label>
+                        <select class="form-select" id="client-select" required>
+                            <option value="" disabled selected>Sélectionner un client</option>
+                            <option value="new">+ Nouveau client</option>
+                        </select>
+                    </div>
+                    
+                    <div id="new-client-fields" style="display: none;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Nom</label>
+                                <input type="text" class="form-input" id="client-name">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Téléphone</label>
+                                <input type="tel" class="form-input" id="client-phone">
                             </div>
                         </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Catégorie</label>
+                            <select class="form-select" id="service-category" required>
+                                <option value="" disabled selected>Choisir une catégorie</option>
+                                <option value="femmes">Femmes</option>
+                                <option value="hommes">Hommes</option>
+                            </select>
+                        </div>
                         
-                        <script src="../js/admin.js"></script>
-                        <script src="../js/admin-dashboard.js"></script>
-                        <script src="../js/admin-login.js"></script>
-                    </body>
-                    </html>     
+                        <div class="form-group">
+                            <label class="form-label">Service</label>
+                            <select class="form-select" id="service-select" required>
+                                <option value="" disabled selected>Choisir d'abord une catégorie</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Modèle/Longueur</label>
+                            <select class="form-select" id="model-select" required>
+                                <option value="" disabled selected>Choisir d'abord un service</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Prix (€)</label>
+                            <input type="number" class="form-input" id="price-input" readonly>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <input type="checkbox" id="brushing-option">
+                        <label for="brushing-option">Ajouter un brushing (+5€)</label>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Date</label>
+                            <input type="date" class="form-input" id="date-input" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Heure</label>
+                            <input type="time" class="form-input" id="time-input" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Statut</label>
+                            <select class="form-select" id="status-select" required>
+                                <option value="pending">En attente</option>
+                                <option value="confirmed">Confirmé</option>
+                                <option value="cancelled">Annulé</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-textarea" id="notes-input"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="save-appointment-btn">Enregistrer</button>
+                <button class="btn btn-danger" id="cancel-appointment-btn">Annuler</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Ajout/Édition de service -->
+    <div class="modal" id="service-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="service-modal-title">Ajouter un service</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="service-form">
+                    <input type="hidden" id="service-id">
+                    <input type="hidden" id="service-category-hidden">
+                    
+                    <div class="form-group">
+                        <label class="form-label">Nom du service</label>
+                        <input type="text" class="form-input" id="service-name" required>
+                    </div>
+                    
+                    <div id="women-service-prices">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Prix court (€)</label>
+                                <input type="number" class="form-input" id="price-court" min="0">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Prix moyen (€)</label>
+                                <input type="number" class="form-input" id="price-moyen" min="0">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Prix long (€)</label>
+                                <input type="number" class="form-input" id="price-long" min="0">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="men-service-price" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">Prix (€)</label>
+                            <input type="number" class="form-input" id="price-unique" min="0" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Image du service</label>
+                        <input type="file" class="form-input" id="service-image" accept="image/*">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="save-service-btn">Enregistrer</button>
+                <button class="btn btn-danger" id="cancel-service-btn">Annuler</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de confirmation -->
+    <div class="modal" id="confirm-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirmation</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirm-message">Êtes-vous sûr de vouloir effectuer cette action ?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" id="confirm-yes-btn">Oui</button>
+                <button class="btn btn-primary" id="confirm-no-btn">Non</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Détails du rendez-vous -->
+    <div class="modal" id="details-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Détails du rendez-vous</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="details-content">
+                <!-- Contenu des détails inséré dynamiquement -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="details-close-btn">Fermer</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../js/admin.js"></script>
+    <script src="../js/admin-dashboard.js"></script>
+    <script src="../js/admin-login.js"></script>
+</body>
+</html>

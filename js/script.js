@@ -206,6 +206,8 @@ function saveReservation(reservation) {
     let reservations = JSON.parse(localStorage.getItem('reservations')) || [];
     reservations.push(reservation);
     localStorage.setItem('reservations', JSON.stringify(reservations));
+
+    
 }
 
 function displayReservations() {
@@ -557,6 +559,23 @@ function init() {
     populateServiceSelect();
     initEventListeners();
     displayReservations();
+}
+
+import emailNotificationService from './email-notifications.js';
+
+// Modifiez votre fonction de sauvegarde de réservation
+function saveReservation(reservation) {
+    // Votre logique existante de sauvegarde
+
+    // Ajouter l'envoi de l'email de confirmation
+    // Assurez-vous d'avoir un champ email dans votre formulaire de réservation
+    if (reservation.email) {
+        emailNotificationService.sendEmail(
+            reservation.email, 
+            'reservation_confirmation', 
+            reservation
+        );
+    }
 }
 
 // Lancer l'application au chargement de la page
