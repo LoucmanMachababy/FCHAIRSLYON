@@ -73,7 +73,8 @@ function displayAvailabilityMessage(isAvailable, message) {
 // Vérifier si la date et l'heure sélectionnées sont disponibles avant de soumettre
 function validateAvailabilityBeforeSubmit(event) {
     // Vérifier si le module de disponibilité est chargé
-    if (!window.availabilityModule) {
+    const availabilityModule = getAvailabilityModule();
+    if (!availabilityModule) {
         return true;
     }
     
@@ -92,14 +93,14 @@ function validateAvailabilityBeforeSubmit(event) {
     }
     
     // Vérifier si la date est disponible
-    if (!window.availabilityModule.isDateAvailable(dateString)) {
+    if (!availabilityModule.isDateAvailable(dateString)) {
         alert("Cette date n'est pas disponible pour les réservations. Veuillez choisir une autre date.");
         event.preventDefault();
         return false;
     }
     
     // Vérifier si l'heure est disponible
-    const availableHours = window.availabilityModule.getAvailableHours(dateString);
+    const availableHours = availabilityModule.getAvailableHours(dateString);
     if (!availableHours.includes(timeString)) {
         alert("Ce créneau horaire n'est pas disponible. Veuillez choisir un autre créneau.");
         event.preventDefault();
@@ -116,15 +117,56 @@ function validateAvailabilityBeforeSubmit(event) {
     return true;
 }
 
-// Fallback si le module admin n'est pas disponible
-if (!window.availabilityModule) {
-    window.availabilityModule = {
+// Récupérer le module de disponibilité (en utilisant StorageService en priorité)
+function getAvailabilityModule() {
+    // Vérifier d'abord dans le stockage local directement
+    try {
+        // Vérifier si nous avons des données dans localStorage
+        const storedData = localStorage.getItem('fchairs_availabilities');
+        if (storedData) {
+            console.log("Données de disponibilité trouvées dans localStorage:", storedData);
+            const availabilities = JSON.parse(storedData);
+            
+            return {
+                isDateAvailable: function(dateString) {
+                    return availabilities[dateString] && availabilities[dateString].length > 0;
+                },
+                getAvailableHours: function(dateString) {
+                    return availabilities[dateString] || [];
+                }
+            };
+        }
+    } catch (error) {
+        console.error("Erreur lors de l'accès aux disponibilités:", error);
+    }
+    
+    // Utiliser StorageService s'il est disponible
+    if (window.StorageService) {
+        console.log("Utilisation de StorageService pour les disponibilités");
+        return {
+            isDateAvailable: function(dateString) {
+                return window.StorageService.isDateAvailable(dateString);
+            },
+            getAvailableHours: function(dateString) {
+                return window.StorageService.getAvailableHours(dateString);
+            }
+        };
+    }
+    
+    // Sinon, utiliser le module de disponibilité global s'il existe
+    if (window.availabilityModule) {
+        console.log("Utilisation du module availabilityModule global");
+        return window.availabilityModule;
+    }
+    
+    // Fallback: créer un module de base
+    console.log("Aucun module de disponibilité trouvé, utilisation du fallback");
+    return {
         isDateAvailable: function(dateString) {
             // Par défaut, considérer que les dates futures sont disponibles, sauf dimanche
             const date = new Date(dateString);
             return date > new Date() && date.getDay() !== 0;
         },
-        
         getAvailableHours: function(dateString) {
             // Par défaut, créneaux de 9h à 19h avec intervalles de 30min
             const hours = [];
@@ -139,8 +181,9 @@ if (!window.availabilityModule) {
 
 // Mettre à jour les créneaux horaires disponibles
 function updateAvailableTimeSlots(dateString) {
-    // Vérifier si le module de disponibilité est chargé
-    if (!window.availabilityModule) {
+    // Récupérer le module de disponibilité
+    const availabilityModule = getAvailabilityModule();
+    if (!availabilityModule) {
         console.error("Module de disponibilité non trouvé");
         return;
     }
@@ -165,7 +208,7 @@ function updateAvailableTimeSlots(dateString) {
     const dateFrancais = `${jourSemaine} ${jour} ${nomMois}`;
     
     // Vérifier si la date est disponible
-    if (!window.availabilityModule.isDateAvailable(dateString)) {
+    if (!availabilityModule.isDateAvailable(dateString)) {
         // Afficher un message d'erreur
         displayAvailabilityMessage(false, `${dateFrancais} n'est pas disponible pour les réservations. Veuillez choisir une autre date.`);
         
@@ -175,7 +218,7 @@ function updateAvailableTimeSlots(dateString) {
     }
     
     // Récupérer les heures disponibles
-    const availableHours = window.availabilityModule.getAvailableHours(dateString);
+    const availableHours = availabilityModule.getAvailableHours(dateString);
     
     if (availableHours.length === 0) {
         // Afficher un message d'erreur
@@ -253,6 +296,7 @@ function enhanceDatePicker() {
     });
 }
 
+// Modifiez cette partie du code dans client-availability.js
 // Générer le calendrier pour le sélecteur de date
 function generateCalendar(calendarElement) {
     // Récupérer la date actuelle ou la date sélectionnée
@@ -294,6 +338,9 @@ function generateCalendar(calendarElement) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
+    // Obtenir le module de disponibilité
+    const availabilityModule = getAvailabilityModule();
+    
     // Jours du mois précédent
     const prevMonthLastDay = new Date(currentYear, currentMonth, 0).getDate();
     for (let i = startingDay - 1; i >= 0; i--) {
@@ -312,8 +359,8 @@ function generateCalendar(calendarElement) {
             classes += ' past';
         } else {
             // Vérifier si la date est disponible
-            if (window.availabilityModule && window.availabilityModule.isDateAvailable) {
-                if (window.availabilityModule.isDateAvailable(dateString)) {
+            if (availabilityModule && availabilityModule.isDateAvailable) {
+                if (availabilityModule.isDateAvailable(dateString)) {
                     classes += ' available';
                 }
             }
@@ -371,9 +418,8 @@ function generateCalendar(calendarElement) {
             // Masquer le calendrier
             calendarElement.style.display = 'none';
             
-            // Déclencher l'événement de changement pour mettre à jour les créneaux
-            const event = new Event('change');
-            dateInput.dispatchEvent(event);
+            // CORRECTION ICI: Forcer la mise à jour des créneaux disponibles
+            updateAvailableTimeSlots(dateString);
         });
     });
 }

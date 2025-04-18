@@ -415,12 +415,18 @@ function formatDateString(date) {
     return `${year}-${month}-${day}`;
 }
 
+// MODIFICATIONS ICI : Utilisation des méthodes de StorageService
 function setAvailabilities(availabilities) {
     try {
-        // Utiliser une clé absolue qui ne dépend pas du chemin
-        localStorage.setItem('/availabilities', JSON.stringify(availabilities));
-        console.log("Disponibilités enregistrées:", availabilities);
-        return true;
+        // Utiliser StorageService pour la cohérence
+        if (window.StorageService) {
+            return window.StorageService.setAvailabilities(availabilities);
+        } else {
+            // Fallback si StorageService n'est pas disponible
+            localStorage.setItem('fchairs_availabilities', JSON.stringify(availabilities));
+            console.log("Disponibilités enregistrées:", availabilities);
+            return true;
+        }
     } catch (error) {
         console.error("Erreur lors de l'enregistrement des disponibilités:", error);
         return false;
@@ -429,7 +435,13 @@ function setAvailabilities(availabilities) {
 
 function getAvailabilities() {
     try {
-        return JSON.parse(localStorage.getItem('/availabilities') || '{}');
+        // Utiliser StorageService pour la cohérence
+        if (window.StorageService) {
+            return window.StorageService.getAvailabilities();
+        } else {
+            // Fallback si StorageService n'est pas disponible
+            return JSON.parse(localStorage.getItem('fchairs_availabilities') || '{}');
+        }
     } catch (error) {
         console.error("Erreur lors de la récupération des disponibilités:", error);
         return {};

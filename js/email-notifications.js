@@ -176,5 +176,5 @@ function exampleUsage() {
     );
 }
 
-// Exporter le service
-export default emailNotificationService;
+// Exporter le service (pas besoin de 'export default' en mode non-module)
+window.emailNotificationService = emailNotificationService;

@@ -1,3 +1,46 @@
+// Initialiser EmailJS
+function initEmailJS() {
+    (function() {
+        // Remplacez par votre clé publique EmailJS (celle que vous trouvez dans Account > API Keys)
+        emailjs.init("votre_cle_publique_ici");
+    })();
+}
+
+// Fonction pour envoyer un email de confirmation
+function sendConfirmationEmail(reservation) {
+    const dateTime = new Date(reservation.dateTime);
+    const formattedDate = dateTime.toLocaleDateString('fr-FR', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+    const formattedTime = dateTime.toLocaleTimeString('fr-FR', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    const emailParams = {
+        to_name: reservation.name,
+        to_email: reservation.email,
+        email: reservation.email,
+        service_name: reservation.service,
+        service_model: reservation.model,
+        reservation_date: formattedDate,
+        reservation_time: formattedTime,
+        total_price: reservation.totalPrice + '€',
+        brushing: reservation.brushing ? 'Oui' : 'Non'
+    };
+    
+    // Envoyer l'email
+    emailjs.send('service_ijqcgmf', 'template_zt7aabh', emailParams)
+        .then(function(response) {
+            console.log('EMAIL ENVOYÉ!', response.status, response.text);
+        }, function(error) {
+            console.log('ERREUR D\'ENVOI EMAIL...', error);
+        });
+}
+
+
 // Données des services
 const services = {
     femmes: {
@@ -487,9 +530,24 @@ function initEventListeners() {
         const model = modelSelect.value;
         const name = document.getElementById('name-input').value;
         const phone = document.getElementById('phone-input').value;
+        const email = document.getElementById('email-input')?.value || ''; // Récupérer l'email
         const date = document.getElementById('date-input').value;
-        const time = document.getElementById('time-input').value;
-        const notes = document.getElementById('notes-input').value;
+        
+        // Récupérer l'heure - vérifier si nous utilisons le select personnalisé
+        let time;
+        const timeInput = document.getElementById('time-input');
+        const timeSelect = document.getElementById('time-select');
+        
+        if (timeInput && timeInput.value) {
+            time = timeInput.value;
+        } else if (timeSelect && timeSelect.value) {
+            time = timeSelect.value;
+        } else {
+            showAlert('error', 'Veuillez sélectionner une heure de rendez-vous.');
+            return;
+        }
+        
+        const notes = document.getElementById('notes-input')?.value || '';
         const brushing = brushingOption.checked;
         
         // Calculer le prix
@@ -502,6 +560,7 @@ function initEventListeners() {
             model,
             name,
             phone,
+            email, // Ajouter l'email à l'objet de réservation
             dateTime: `${date}T${time}`,
             notes,
             brushing,
@@ -521,6 +580,14 @@ function initEventListeners() {
     confirmReservationBtn.addEventListener('click', function() {
         saveReservation(currentReservation);
         
+        // Envoyer un email de confirmation si un email est fourni
+        if (currentReservation.email) {
+            sendConfirmationEmail(currentReservation);
+            console.log("Envoi d'email à:", currentReservation.email);
+        } else {
+            console.log("Pas d'email fourni pour la réservation");
+        }
+        
         // Réinitialiser le formulaire
         reservationForm.reset();
         modelSelect.innerHTML = '<option value="" disabled selected>Choisissez d\'abord un service</option>';
@@ -535,33 +602,62 @@ function initEventListeners() {
         displayReservations();
     });
     
-    // Événement pour fermer la modal
-    document.querySelector('.modal-close').addEventListener('click', function() {
-        confirmationModal.style.display = 'none';
-    });
-    
-    // Fermer la modal si on clique à l'extérieur
-    confirmationModal.addEventListener('click', function(event) {
-        if (event.target === confirmationModal) {
-            confirmationModal.style.display = 'none';
-        }
-    });
-    
     // Configurer la date minimale pour aujourd'hui
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('date-input').min = today;
     document.getElementById('date-input').value = today;
 }
 
-// Initialisation de l'application
+// Fonction pour envoyer un email de confirmation - DÉPLACER EN DEHORS de initEventListeners
+function sendConfirmationEmail(reservation) {
+    const dateTime = new Date(reservation.dateTime);
+    const formattedDate = dateTime.toLocaleDateString('fr-FR', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+    const formattedTime = dateTime.toLocaleTimeString('fr-FR', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    const emailParams = {
+        to_name: reservation.name,
+        to_email: reservation.email,
+        email: reservation.email,
+        service_name: reservation.service,
+        service_model: reservation.model,
+        reservation_date: formattedDate,
+        reservation_time: formattedTime,
+        total_price: reservation.totalPrice + '€',
+        brushing: reservation.brushing ? 'Oui' : 'Non'
+    };
+    
+    // Envoyer l'email avec vos identifiants
+    emailjs.send('service_ijqcgmf', 'template_zt7aabh', emailParams)
+        .then(function(response) {
+            console.log('EMAIL ENVOYÉ!', response.status, response.text);
+        }, function(error) {
+            console.log('ERREUR D\'ENVOI EMAIL...', error);
+        });
+}
+
+// Initialiser EmailJS - AJOUTER CETTE FONCTION
+function initEmailJS() {
+    (function() {
+        // Remplacez par votre clé publique EmailJS
+        emailjs.init("FNaCkd48052cJ6ssL");
+    })();
+}
+
+// Fonction d'initialisation - DÉPLACER EN DEHORS de initEventListeners
 function init() {
+    initEmailJS();
     renderServices();
     populateServiceSelect();
     initEventListeners();
     displayReservations();
 }
 
-
-
-// Lancer l'application au chargement de la page
+// Lancer l'application au chargement de la page - DÉPLACER EN DEHORS de initEventListeners
 document.addEventListener('DOMContentLoaded', init);
