@@ -659,5 +659,31 @@ function init() {
     displayReservations();
 }
 
+// Ajoutez ce code à votre fichier script.js pour optimiser le chargement sur mobile
+document.addEventListener('DOMContentLoaded', function() {
+    // Détection de connexion lente
+    if (navigator.connection && navigator.connection.effectiveType.includes('2g')) {
+        // Désactiver certaines animations pour économiser les ressources
+        document.documentElement.classList.add('reduce-motion');
+        
+        // Charger les images de façon différée
+        document.querySelectorAll('img').forEach(img => {
+            img.loading = 'lazy';
+        });
+    }
+    
+    // Optimisation du scroll sur mobile
+    let scrollTimeout;
+    window.addEventListener('scroll', function() {
+        // Ajouter une classe pendant le défilement
+        document.body.classList.add('is-scrolling');
+        
+        // Supprimer la classe après l'arrêt du défilement
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(function() {
+            document.body.classList.remove('is-scrolling');
+        }, 200);
+    }, { passive: true });
+});
 // Lancer l'application au chargement de la page - DÉPLACER EN DEHORS de initEventListeners
 document.addEventListener('DOMContentLoaded', init);

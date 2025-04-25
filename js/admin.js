@@ -1805,6 +1805,28 @@ document.querySelectorAll('.modal').forEach(modal => {
 });
 }
 
+// Ajoutez ce code à la fin de votre fichier admin.js
+document.addEventListener('DOMContentLoaded', function() {
+    // Rendre tous les tableaux responsifs
+    document.querySelectorAll('table').forEach(table => {
+        if (!table.classList.contains('responsive-table')) {
+            table.classList.add('responsive-table');
+            
+            // Obtenir les en-têtes
+            const headers = Array.from(table.querySelectorAll('th')).map(th => th.textContent.trim());
+            
+            // Ajouter des attributs data aux cellules
+            table.querySelectorAll('tbody tr').forEach(row => {
+                Array.from(row.querySelectorAll('td')).forEach((cell, index) => {
+                    if (headers[index]) {
+                        cell.setAttribute('data-label', headers[index]);
+                    }
+                });
+            });
+        }
+    });
+});
+
 // ======== INITIALISATION GÉNÉRALE ========
 
 // Lancer l'initialisation au chargement de la page
