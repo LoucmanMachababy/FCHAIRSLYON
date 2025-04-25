@@ -116,12 +116,11 @@ const firebaseConfig = {
             // Toaster une notification
             this.showToast("Les disponibilités ont été mises à jour depuis un autre appareil");
             
-            if (window.location.pathname.includes('/admin/')) {
-                if (confirm("Les disponibilités ont été mises à jour ailleurs. Recharger la page ?")) {
-                    window.location.reload();
-                }
-            }
-            
+            // Actualiser la page admin si nécessaire
+            if (document.querySelector('.content-section#availability')?.classList.contains('active')) {
+              if (confirm("Les disponibilités ont été mises à jour ailleurs. Recharger la page ?")) {
+                window.location.reload();
+              }
             }
           }
         } else {
