@@ -116,12 +116,12 @@ const firebaseConfig = {
             // Toaster une notification
             this.showToast("Les disponibilités ont été mises à jour depuis un autre appareil");
             
-            // Actualiser la page admin si nécessaire
             if (window.location.pathname.includes('/admin/')) {
-              // Retarder légèrement pour permettre à l'utilisateur de voir la notification
-              setTimeout(() => {
-                window.location.reload();
-              }, 2000);
+                if (confirm("Les disponibilités ont été mises à jour ailleurs. Recharger la page ?")) {
+                    window.location.reload();
+                }
+            }
+            
             }
           }
         } else {
