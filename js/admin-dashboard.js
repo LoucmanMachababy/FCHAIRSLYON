@@ -135,10 +135,7 @@ function generateDemoData() {
     
     // Sauvegarder les réservations
     localStorage.setItem('reservations', JSON.stringify(demoReservations));
-    
-    // Recharger la page pour afficher les données
-    alert('Données de démonstration générées avec succès !');
-    window.location.reload();
+
 }
 
 // Fonction pour générer un graphique de revenus
