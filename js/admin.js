@@ -1833,34 +1833,41 @@ document.addEventListener('DOMContentLoaded', init);
 
 // ======== FONCTION DE RESET ADMIN (améliorée) ========
 function resetAdminDataAndRefresh() {
-    // Suppression directe sans confirmation
-    localStorage.removeItem('reservations');
-    localStorage.removeItem('clients');
-    alert('Toutes les données ont été supprimées avec succès.');
+    console.log('Début de la réinitialisation...');
     
-    // Rafraîchir l'affichage sans reload total
-    let refreshed = false;
-    try { if (typeof displayAllAppointments === 'function') { displayAllAppointments(); refreshed = true; } } catch(e){}
-    try { if (typeof displayClients === 'function') { displayClients(); refreshed = true; } } catch(e){}
-    try { if (typeof updateDashboardStats === 'function') { updateDashboardStats(); refreshed = true; } } catch(e){}
-    if (!refreshed) location.reload();
+    // Suppression directe des données
+    localStorage.clear(); // Supprime tout le localStorage
+    console.log('localStorage vidé');
+    
+    // Forcer le rechargement de la page
+    alert('Toutes les données ont été supprimées. La page va se recharger.');
+    window.location.reload();
 }
 
 function addResetButtonToSection(sectionId, btnId) {
+    console.log('Ajout du bouton reset à', sectionId);
     const section = document.querySelector(sectionId + ' .header');
-    if (section && !section.querySelector('#' + btnId)) {
+    if (section) {
+        // Supprimer l'ancien bouton s'il existe
+        const oldBtn = section.querySelector('#' + btnId);
+        if (oldBtn) oldBtn.remove();
+        
+        // Créer le nouveau bouton
         const resetBtn = document.createElement('button');
         resetBtn.id = btnId;
         resetBtn.className = 'btn btn-danger';
         resetBtn.innerHTML = '<i class="fas fa-trash"></i> Tout réinitialiser';
         resetBtn.style.marginLeft = '20px';
-        resetBtn.onclick = resetAdminDataAndRefresh;
+        resetBtn.onclick = function() {
+            console.log('Bouton reset cliqué');
+            resetAdminDataAndRefresh();
+        };
         section.appendChild(resetBtn);
+        console.log('Bouton reset ajouté');
+    } else {
+        console.log('Section non trouvée:', sectionId);
     }
 }
-addResetButtonToSection('#dashboard', 'reset-btn-dashboard');
-addResetButtonToSection('#clients', 'reset-btn-clients');
-addResetButtonToSection('#appointments', 'reset-btn-appointments');
 
 // === THEME SWITCH (sombre/clair) amélioré ===
 function applyTheme() {
