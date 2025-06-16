@@ -1855,3 +1855,60 @@ if (!document.getElementById('reset-admin-btn')) {
         }
     });
 }
+
+// === THEME SWITCH (sombre/clair) ===
+function applyTheme() {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+        document.body.classList.add('dark-mode');
+    } else {
+        document.body.classList.remove('dark-mode');
+    }
+}
+
+function toggleTheme() {
+    if (document.body.classList.contains('dark-mode')) {
+        document.body.classList.remove('dark-mode');
+        localStorage.setItem('theme', 'light');
+    } else {
+        document.body.classList.add('dark-mode');
+        localStorage.setItem('theme', 'dark');
+    }
+}
+
+function addThemeSwitch() {
+    if (document.getElementById('theme-switch')) return;
+    const btn = document.createElement('button');
+    btn.id = 'theme-switch';
+    btn.className = 'theme-switch';
+    btn.innerHTML = '<span class="icon">🌙</span> <span class="label">Sombre</span>';
+    btn.onclick = function() {
+        toggleTheme();
+        updateThemeSwitchIcon();
+    };
+    document.body.appendChild(btn);
+    updateThemeSwitchIcon();
+}
+
+function updateThemeSwitchIcon() {
+    const btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    if (document.body.classList.contains('dark-mode')) {
+        btn.innerHTML = '<span class="icon">☀️</span> <span class="label">Clair</span>';
+    } else {
+        btn.innerHTML = '<span class="icon">🌙</span> <span class="label">Sombre</span>';
+    }
+}
+
+// Appliquer le thème au chargement
+applyTheme();
+addThemeSwitch();
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+
+// Animation d'apparition sur les sections principales
+window.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.section-title, .card, .modal-content, .reservation-item, .stat-card').forEach(el => {
+        el.classList.add('fade-in');
+    });
+});

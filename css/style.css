@@ -1,16 +1,124 @@
+/* === Variables de thème clair === */
 :root {
-    --primary: #FFE0E8;
+    --primary: #ffe0e8;
     --primary-dark: #ffb2d9;
-    --secondary: #333;
-    --text: #333;
-    --background: #f9f9f9;
+    --secondary: #222;
+    --accent: #ffd700;
     --card-bg: #fff;
-    --border: #e3e3e3;
-    --success: #4CAF50;
-    --error: #F44336;
-    --warning: #FFC107;
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --border: #f3c6e8;
+    --shadow: 0 4px 24px rgba(0,0,0,0.08);
+    --success: #4caf50;
+    --warning: #ffc107;
+    --danger: #f44336;
+    --transition: 0.3s cubic-bezier(.4,0,.2,1);
+    --glass: rgba(255,255,255,0.7);
 }
+
+/* === Variables de thème sombre === */
+body.dark-mode {
+    --primary: #1a1a1a;
+    --primary-dark: #222;
+    --secondary: #fff;
+    --accent: #ffd700;
+    --card-bg: #232323;
+    --border: #333;
+    --shadow: 0 4px 24px rgba(0,0,0,0.32);
+    --success: #81c784;
+    --warning: #ffd54f;
+    --danger: #e57373;
+    --glass: rgba(34,34,34,0.7);
+}
+
+/* === Animations modernes === */
+.fade-in {
+    animation: fadeIn var(--transition) both;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: none; }
+}
+.slide-up {
+    animation: slideUp var(--transition) both;
+}
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: none; }
+}
+
+/* === Effets de hover modernes === */
+.card, .btn, .modal-content {
+    transition: box-shadow var(--transition), background var(--transition), color var(--transition), border var(--transition);
+}
+.card:hover, .modal-content:hover {
+    box-shadow: 0 8px 32px rgba(255, 176, 217, 0.15), var(--shadow);
+    background: var(--glass);
+}
+.btn:hover {
+    background: var(--accent);
+    color: var(--secondary);
+    transform: translateY(-2px) scale(1.04);
+}
+
+/* === Cartes glassmorphism === */
+.card, .modal-content {
+    background: var(--card-bg);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    border: 1.5px solid var(--border);
+    backdrop-filter: blur(6px);
+}
+
+/* === Header/Footer stylés === */
+header, footer {
+    background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+    color: var(--secondary);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+/* === Switch thème === */
+.theme-switch {
+    position: fixed;
+    top: 24px;
+    right: 32px;
+    z-index: 1001;
+    background: var(--card-bg);
+    border: 1.5px solid var(--border);
+    border-radius: 30px;
+    box-shadow: var(--shadow);
+    padding: 8px 18px;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--secondary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background var(--transition), color var(--transition);
+}
+.theme-switch .icon {
+    font-size: 1.3em;
+    transition: color var(--transition);
+}
+
+/* === Amélioration générale des composants === */
+body, input, select, textarea, button {
+    font-family: 'Poppins', 'Montserrat', Arial, sans-serif;
+    letter-spacing: 0.01em;
+}
+
+/* Ajoute fade-in sur les sections principales */
+.section-title, .card, .modal-content, .reservation-item, .stat-card {
+    opacity: 0;
+    animation: fadeIn 0.7s both;
+    animation-delay: 0.1s;
+}
+
+/* Responsive amélioré */
+@media (max-width: 600px) {
+    .theme-switch { right: 10px; top: 10px; }
+    .card, .modal-content { border-radius: 12px; }
+}
+
+/* Ajoute d'autres améliorations visuelles au besoin... */
 
 * {
     margin: 0;
