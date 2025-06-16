@@ -2,6 +2,7 @@
 // Il est chargé après admin.js
 
 // Fonction pour générer des données de test (pour la démo)
+/*
 function generateDemoData() {
     // Vérifier s'il y a déjà des données
     const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
@@ -135,8 +136,8 @@ function generateDemoData() {
     
     // Sauvegarder les réservations
     localStorage.setItem('reservations', JSON.stringify(demoReservations));
-
 }
+*/
 
 // Fonction pour générer un graphique de revenus
 function generateRevenueChart(containerId, data) {
@@ -586,7 +587,7 @@ if (!checkAdminAuth()) {
 
 // Générer des données de test si nécessaire
 if (!localStorage.getItem('reservations')) {
-    generateDemoData();
+    // generateDemoData();
 }
 
 // Générer les graphiques
