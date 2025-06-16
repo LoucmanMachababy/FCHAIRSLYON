@@ -1076,22 +1076,67 @@ body.flash-effect {
 
 /* === Fond glassmorphism/neon en dark mode === */
 body.dark-mode {
-  background: linear-gradient(135deg, #181a23 0%, #23243a 100%);
-  background-attachment: fixed;
+  background: linear-gradient(135deg, #16171d 0%, #23243a 100%);
+  color: #fff;
 }
-body.dark-mode::before {
-  content: '';
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: radial-gradient(circle at 70% 20%, #ffb2d9 0%, transparent 60%),
-              radial-gradient(circle at 20% 80%, #ffd700 0%, transparent 70%);
-  opacity: 0.18;
+body.dark-mode, body.dark-mode * {
+  color: #fff !important;
+  border-color: #444 !important;
+}
+body.dark-mode .card, body.dark-mode .modal-content {
+  background: rgba(34,34,34,0.98) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.45), var(--shadow);
+  border: 1.5px solid #333 !important;
+}
+body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+  background: #23243a !important;
+  color: #fff !important;
+  border: 1.5px solid #444 !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+body.dark-mode input::placeholder, body.dark-mode textarea::placeholder {
+  color: #bbb !important;
+  opacity: 1;
+}
+body.dark-mode label, body.dark-mode .form-label {
+  color: #ffd700 !important;
+}
+body.dark-mode .btn, body.dark-mode .action-btn, body.dark-mode .theme-switch {
+  background: linear-gradient(90deg, #23243a, #181a23);
+  color: #ffd700 !important;
+  border: 2px solid #ffd700;
+  box-shadow: 0 2px 12px #ffd70033, var(--shadow);
+}
+body.dark-mode .btn:hover, body.dark-mode .action-btn:hover, body.dark-mode .theme-switch:hover {
+  background: #ffd700;
+  color: #23243a !important;
+  border-color: #ffd700;
+}
+body.dark-mode .section-title, body.dark-mode .page-title {
+  color: #ffd700 !important;
+  text-shadow: 0 2px 12px #ffd700, 0 1px 2px #0008;
 }
 
-/* === Glow sur les titres === */
-.section-title, .page-title {
-  text-shadow: 0 2px 12px var(--accent), 0 1px 2px rgba(0,0,0,0.08);
+/* Espacement horaires d'ouverture */
+.hours-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+.hours-day {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.hours-day label {
+  min-width: 80px;
+  font-weight: 600;
+}
+.hours-inputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 }

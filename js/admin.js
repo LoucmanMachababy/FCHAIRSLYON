@@ -1831,30 +1831,34 @@ document.addEventListener('DOMContentLoaded', function() {
 // Lancer l'initialisation au chargement de la page
 document.addEventListener('DOMContentLoaded', init);
 
-// ======== FONCTION DE RESET ADMIN ========
+// ======== FONCTION DE RESET ADMIN (améliorée) ========
 function resetAdminData() {
     if (confirm('Voulez-vous vraiment supprimer tous les rendez-vous, clients et stats ?')) {
         localStorage.removeItem('reservations');
         localStorage.removeItem('clients');
+        alert('Toutes les données ont été supprimées.');
         location.reload();
     }
 }
 
-// Ajouter le bouton dans le dashboard si absent
-if (!document.getElementById('reset-admin-btn')) {
+// Ajouter le bouton dans le dashboard, la section clients et la section rendez-vous si absent
+function addResetButtonToSection(sectionId) {
     document.addEventListener('DOMContentLoaded', function() {
-        const dashboardHeader = document.querySelector('#dashboard .header');
-        if (dashboardHeader) {
+        const section = document.querySelector(sectionId + ' .header');
+        if (section && !section.querySelector('#reset-admin-btn')) {
             const resetBtn = document.createElement('button');
             resetBtn.id = 'reset-admin-btn';
             resetBtn.className = 'btn btn-danger';
-            resetBtn.innerHTML = '<i class="fas fa-trash"></i> Réinitialiser l\'admin';
+            resetBtn.innerHTML = '<i class="fas fa-trash"></i> Tout réinitialiser';
             resetBtn.style.marginLeft = '20px';
             resetBtn.onclick = resetAdminData;
-            dashboardHeader.appendChild(resetBtn);
+            section.appendChild(resetBtn);
         }
     });
 }
+addResetButtonToSection('#dashboard');
+addResetButtonToSection('#clients');
+addResetButtonToSection('#appointments');
 
 // === THEME SWITCH (sombre/clair) amélioré ===
 function applyTheme() {
