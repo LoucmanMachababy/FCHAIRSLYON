@@ -1833,17 +1833,17 @@ document.addEventListener('DOMContentLoaded', init);
 
 // ======== FONCTION DE RESET ADMIN (améliorée) ========
 function resetAdminDataAndRefresh() {
-    if (confirm('Voulez-vous vraiment supprimer tous les rendez-vous, clients et stats ?')) {
-        localStorage.removeItem('reservations');
-        localStorage.removeItem('clients');
-        alert('Toutes les données ont été supprimées.');
-        // Rafraîchir l'affichage sans reload total
-        let refreshed = false;
-        try { if (typeof displayAllAppointments === 'function') { displayAllAppointments(); refreshed = true; } } catch(e){}
-        try { if (typeof displayClients === 'function') { displayClients(); refreshed = true; } } catch(e){}
-        try { if (typeof updateDashboardStats === 'function') { updateDashboardStats(); refreshed = true; } } catch(e){}
-        if (!refreshed) location.reload();
-    }
+    // Suppression directe sans confirmation
+    localStorage.removeItem('reservations');
+    localStorage.removeItem('clients');
+    alert('Toutes les données ont été supprimées avec succès.');
+    
+    // Rafraîchir l'affichage sans reload total
+    let refreshed = false;
+    try { if (typeof displayAllAppointments === 'function') { displayAllAppointments(); refreshed = true; } } catch(e){}
+    try { if (typeof displayClients === 'function') { displayClients(); refreshed = true; } } catch(e){}
+    try { if (typeof updateDashboardStats === 'function') { updateDashboardStats(); refreshed = true; } } catch(e){}
+    if (!refreshed) location.reload();
 }
 
 function addResetButtonToSection(sectionId, btnId) {
