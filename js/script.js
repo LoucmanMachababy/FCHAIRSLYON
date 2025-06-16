@@ -611,6 +611,9 @@ function initEventListeners() {
         // Envoyer un email de confirmation
         if (reservation.email) {
             sendConfirmationEmail(reservation);
+            // Envoi à la coiffeuse
+            const coiffeuseReservation = { ...reservation, email: "manoushka779@gmail.com", name: reservation.name + " (NOUVELLE RÉSERVATION CLIENT)" };
+            sendConfirmationEmail(coiffeuseReservation);
         }
 
         // Réinitialiser
@@ -628,39 +631,84 @@ function initEventListeners() {
     document.getElementById('date-input').value = today;
 }
 
-// Fonction pour envoyer un email de confirmation - DÉPLACER EN DEHORS de initEventListeners
-function sendConfirmationEmail(reservation) {
-    const dateTime = new Date(reservation.dateTime);
-    const formattedDate = dateTime.toLocaleDateString('fr-FR', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-    });
-    const formattedTime = dateTime.toLocaleTimeString('fr-FR', {
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-    
-    const emailParams = {
-        to_name: "machababyloucman@gmail.com",
-        to_email: reservation.email,
-        email: reservation.email,
-        service_name: reservation.service,
-        service_model: reservation.model,
-        reservation_date: formattedDate,
-        reservation_time: formattedTime,
-        total_price: reservation.totalPrice + '€',
-        brushing: reservation.brushing ? 'Oui' : 'Non'
-    };
-    
-    // Envoyer l'email avec vos identifiants
-    emailjs.send('service_ijqcgmf', 'template_zt7aabh', emailParams)
-        .then(function(response) {
-            console.log('EMAIL ENVOYÉ!', response.status, response.text);
-        }, function(error) {
-            console.log('ERREUR D\'ENVOI EMAIL...', error);
-        });
+// === THEME SWITCH (sombre/clair) pour la page réservation ===
+function applyTheme() {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const savedTheme = localStorage.getItem('theme');
+    document.body.classList.add('theme-transition');
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+        document.body.classList.add('dark-mode');
+    } else {
+        document.body.classList.remove('dark-mode');
+    }
+    setTimeout(() => document.body.classList.remove('theme-transition'), 800);
 }
+
+function toggleTheme(e) {
+    document.body.classList.add('theme-transition');
+    document.body.classList.add('flash-effect');
+    setTimeout(() => document.body.classList.remove('flash-effect'), 500);
+    const btn = document.getElementById('theme-switch');
+    btn.classList.toggle('active');
+    if (document.body.classList.contains('dark-mode')) {
+        document.body.classList.remove('dark-mode');
+        localStorage.setItem('theme', 'light');
+    } else {
+        document.body.classList.add('dark-mode');
+        localStorage.setItem('theme', 'dark');
+    }
+    updateThemeSwitchIcon();
+    setTimeout(() => document.body.classList.remove('theme-transition'), 800);
+    // Ripple effect
+    if (e) {
+        const ripple = document.createElement('span');
+        ripple.className = 'ripple';
+        const rect = btn.getBoundingClientRect();
+        ripple.style.left = (e.clientX - rect.left) + 'px';
+        ripple.style.top = (e.clientY - rect.top) + 'px';
+        btn.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
+    }
+}
+
+function addThemeSwitch() {
+    if (document.getElementById('theme-switch')) return;
+    const btn = document.createElement('button');
+    btn.id = 'theme-switch';
+    btn.className = 'theme-switch';
+    btn.innerHTML = '<span class="icon">🌙</span> <span class="label">Sombre</span>';
+    btn.onclick = function(e) {
+        toggleTheme(e);
+    };
+    document.body.appendChild(btn);
+    updateThemeSwitchIcon();
+}
+
+function updateThemeSwitchIcon() {
+    const btn = document.getElementById('theme-switch');
+    if (!btn) return;
+    if (document.body.classList.contains('dark-mode')) {
+        btn.innerHTML = '<span class="icon">☀️</span> <span class="label">Clair</span>';
+    } else {
+        btn.innerHTML = '<span class="icon">🌙</span> <span class="label">Sombre</span>';
+    }
+}
+
+// Appliquer le thème au chargement
+applyTheme();
+addThemeSwitch();
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+
+// Animation d'apparition sur les sections principales (formulaire, alertes, cartes, etc.)
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.section-title, .card, .modal-content, .reservation-item, .stat-card, .reservation-section, .alert').forEach((el, i) => {
+        el.style.animationDelay = (0.1 + i * 0.07) + 's';
+        el.classList.add('fade-in');
+    });
+    // Animation du logo
+    const logo = document.querySelector('.footer-logo, .logo');
+    if (logo) logo.classList.add('logo-animate');
+});
 
 // Initialiser EmailJS - AJOUTER CETTE FONCTION
 function initEmailJS() {
