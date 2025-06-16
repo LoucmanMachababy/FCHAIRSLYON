@@ -1838,25 +1838,25 @@ function resetAdminDataAndRefresh() {
         localStorage.removeItem('clients');
         alert('Toutes les données ont été supprimées.');
         // Rafraîchir l'affichage sans reload total
-        if (typeof displayAllAppointments === 'function') displayAllAppointments();
-        if (typeof displayClients === 'function') displayClients();
-        if (typeof updateDashboardStats === 'function') updateDashboardStats();
+        let refreshed = false;
+        try { if (typeof displayAllAppointments === 'function') { displayAllAppointments(); refreshed = true; } } catch(e){}
+        try { if (typeof displayClients === 'function') { displayClients(); refreshed = true; } } catch(e){}
+        try { if (typeof updateDashboardStats === 'function') { updateDashboardStats(); refreshed = true; } } catch(e){}
+        if (!refreshed) location.reload();
     }
 }
 
 function addResetButtonToSection(sectionId, btnId) {
-    document.addEventListener('DOMContentLoaded', function() {
-        const section = document.querySelector(sectionId + ' .header');
-        if (section && !section.querySelector('#' + btnId)) {
-            const resetBtn = document.createElement('button');
-            resetBtn.id = btnId;
-            resetBtn.className = 'btn btn-danger';
-            resetBtn.innerHTML = '<i class="fas fa-trash"></i> Tout réinitialiser';
-            resetBtn.style.marginLeft = '20px';
-            resetBtn.onclick = resetAdminDataAndRefresh;
-            section.appendChild(resetBtn);
-        }
-    });
+    const section = document.querySelector(sectionId + ' .header');
+    if (section && !section.querySelector('#' + btnId)) {
+        const resetBtn = document.createElement('button');
+        resetBtn.id = btnId;
+        resetBtn.className = 'btn btn-danger';
+        resetBtn.innerHTML = '<i class="fas fa-trash"></i> Tout réinitialiser';
+        resetBtn.style.marginLeft = '20px';
+        resetBtn.onclick = resetAdminDataAndRefresh;
+        section.appendChild(resetBtn);
+    }
 }
 addResetButtonToSection('#dashboard', 'reset-btn-dashboard');
 addResetButtonToSection('#clients', 'reset-btn-clients');
@@ -1940,3 +1940,27 @@ window.addEventListener('DOMContentLoaded', function() {
     const logo = document.querySelector('.logo');
     if (logo) logo.classList.add('logo-animate');
 });
+
+// Ajoute le bouton à chaque affichage de section
+if (window.displayClients) {
+  const origDisplayClients = window.displayClients;
+  window.displayClients = function() {
+    if (typeof origDisplayClients === 'function') origDisplayClients();
+    addResetButtonToSection('#clients', 'reset-btn-clients');
+  };
+} else {
+  document.addEventListener('DOMContentLoaded', function() {
+    addResetButtonToSection('#clients', 'reset-btn-clients');
+  });
+}
+if (window.displayAllAppointments) {
+  const origDisplayAllAppointments = window.displayAllAppointments;
+  window.displayAllAppointments = function() {
+    if (typeof origDisplayAllAppointments === 'function') origDisplayAllAppointments();
+    addResetButtonToSection('#appointments', 'reset-btn-appointments');
+  };
+} else {
+  document.addEventListener('DOMContentLoaded', function() {
+    addResetButtonToSection('#appointments', 'reset-btn-appointments');
+  });
+}
