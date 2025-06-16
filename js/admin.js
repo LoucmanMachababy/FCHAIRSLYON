@@ -1832,33 +1832,35 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', init);
 
 // ======== FONCTION DE RESET ADMIN (améliorée) ========
-function resetAdminData() {
+function resetAdminDataAndRefresh() {
     if (confirm('Voulez-vous vraiment supprimer tous les rendez-vous, clients et stats ?')) {
         localStorage.removeItem('reservations');
         localStorage.removeItem('clients');
         alert('Toutes les données ont été supprimées.');
-        location.reload();
+        // Rafraîchir l'affichage sans reload total
+        if (typeof displayAllAppointments === 'function') displayAllAppointments();
+        if (typeof displayClients === 'function') displayClients();
+        if (typeof updateDashboardStats === 'function') updateDashboardStats();
     }
 }
 
-// Ajouter le bouton dans le dashboard, la section clients et la section rendez-vous si absent
-function addResetButtonToSection(sectionId) {
+function addResetButtonToSection(sectionId, btnId) {
     document.addEventListener('DOMContentLoaded', function() {
         const section = document.querySelector(sectionId + ' .header');
-        if (section && !section.querySelector('#reset-admin-btn')) {
+        if (section && !section.querySelector('#' + btnId)) {
             const resetBtn = document.createElement('button');
-            resetBtn.id = 'reset-admin-btn';
+            resetBtn.id = btnId;
             resetBtn.className = 'btn btn-danger';
             resetBtn.innerHTML = '<i class="fas fa-trash"></i> Tout réinitialiser';
             resetBtn.style.marginLeft = '20px';
-            resetBtn.onclick = resetAdminData;
+            resetBtn.onclick = resetAdminDataAndRefresh;
             section.appendChild(resetBtn);
         }
     });
 }
-addResetButtonToSection('#dashboard');
-addResetButtonToSection('#clients');
-addResetButtonToSection('#appointments');
+addResetButtonToSection('#dashboard', 'reset-btn-dashboard');
+addResetButtonToSection('#clients', 'reset-btn-clients');
+addResetButtonToSection('#appointments', 'reset-btn-appointments');
 
 // === THEME SWITCH (sombre/clair) amélioré ===
 function applyTheme() {
