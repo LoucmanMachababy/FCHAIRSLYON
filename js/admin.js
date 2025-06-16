@@ -1359,450 +1359,449 @@ function displayUpcomingAppointments() {
     upcomingReservations.sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
     
     // Limiter à 5 rendez-vous
-// Limiter à 5 rendez-vous
-const displayReservations = upcomingReservations.slice(0, 5);
+    const displayReservations = upcomingReservations.slice(0, 5);
     
-const tbody = document.getElementById('upcoming-appointments');
-tbody.innerHTML = '';
+    const tbody = document.getElementById('upcoming-appointments');
+    tbody.innerHTML = '';
 
-// Afficher un message si aucun rendez-vous
-if (displayReservations.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center;">Aucun rendez-vous à venir</td></tr>`;
-    return;
-}
-
-// Remplir le tableau
-displayReservations.forEach((res, index) => {
-    // Formater la date et l'heure
-    const dateTime = new Date(res.dateTime);
-    const formattedDate = dateTime.toLocaleDateString('fr-FR', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-    });
-    
-    const formattedTime = dateTime.toLocaleTimeString('fr-FR', {
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-    
-    // Déterminer la classe de statut
-    let statusClass = '';
-    let statusText = '';
-    
-    switch(res.status) {
-        case 'pending':
-            statusClass = 'status-pending';
-            statusText = 'En attente';
-            break;
-        case 'confirmed':
-            statusClass = 'status-confirmed';
-            statusText = 'Confirmé';
-            break;
-        default:
-            statusClass = 'status-pending';
-            statusText = 'En attente';
+    // Afficher un message si aucun rendez-vous
+    if (displayReservations.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center;">Aucun rendez-vous à venir</td></tr>`;
+        return;
     }
-    
-    // Créer la ligne
-    const row = document.createElement('tr');
-    row.innerHTML = `
-        <td>${res.name}</td>
-        <td>${res.service} (${res.model})</td>
-        <td>${formattedDate} - ${formattedTime}</td>
-        <td>${res.totalPrice}€</td>
-        <td><span class="status ${statusClass}">${statusText}</span></td>
-        <td>
-            <div class="table-actions">
-                <button class="action-btn view"><i class="fas fa-eye"></i></button>
-                <button class="action-btn edit"><i class="fas fa-edit"></i></button>
-                <button class="action-btn delete"><i class="fas fa-trash"></i></button>
-            </div>
-        </td>
-    `;
-    
-    // Ajouter les événements pour les boutons d'action
-    const realIndex = reservations.findIndex(r => 
-        r.service === res.service && 
-        r.dateTime === res.dateTime &&
-        r.phone === res.phone
-    );
-    
-    row.querySelector('.view').addEventListener('click', () => viewAppointmentDetails(realIndex));
-    row.querySelector('.edit').addEventListener('click', () => showEditAppointmentModal(realIndex));
-    row.querySelector('.delete').addEventListener('click', () => deleteAppointment(realIndex));
-    
-    tbody.appendChild(row);
-});
-}
 
-function displayPopularServices() {
-const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
-
-// Compter les occurrences de chaque service
-const serviceCounts = {};
-
-reservations.forEach(res => {
-    if (res.status !== 'cancelled') {
-        const serviceKey = res.service;
-        if (!serviceCounts[serviceKey]) {
-            serviceCounts[serviceKey] = {
-                name: res.service,
-                category: res.category,
-                count: 0,
-                revenue: 0
-            };
-        }
-        serviceCounts[serviceKey].count++;
-        serviceCounts[serviceKey].revenue += res.totalPrice;
-    }
-});
-
-// Convertir en tableau et trier par nombre de réservations
-const popularServices = Object.values(serviceCounts).sort((a, b) => b.count - a.count);
-
-// Limiter à 5 services
-const topServices = popularServices.slice(0, 5);
-
-const container = document.getElementById('popular-services');
-container.innerHTML = '';
-
-// Afficher un message si aucun service
-if (topServices.length === 0) {
-    container.innerHTML = '<p style="text-align: center;">Aucune donnée disponible</p>';
-    return;
-}
-
-// Afficher les services populaires
-topServices.forEach(service => {
-    const serviceItem = document.createElement('div');
-    serviceItem.className = 'service-item';
-    
-    serviceItem.innerHTML = `
-        <div class="service-icon">
-            <i class="fas fa-cut"></i>
-        </div>
-        <div class="service-info">
-            <div class="service-name">${service.name}</div>
-            <div class="service-price">${service.count} réservation${service.count > 1 ? 's' : ''} - ${service.revenue}€</div>
-        </div>
-        <div class="service-actions">
-            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
-        </div>
-    `;
-    
-    // Ajouter un événement pour le bouton d'édition
-    serviceItem.querySelector('.edit').addEventListener('click', () => {
-        showEditServiceModal(service.category, service.name);
-    });
-    
-    container.appendChild(serviceItem);
-});
-}
-
-function updateDashboardStats() {
-const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
-
-// Rendez-vous aujourd'hui
-const today = new Date();
-today.setHours(0, 0, 0, 0);
-const tomorrow = new Date(today);
-tomorrow.setDate(tomorrow.getDate() + 1);
-
-const todayAppointments = reservations.filter(res => {
-    const resDate = new Date(res.dateTime);
-    return resDate >= today && resDate < tomorrow && res.status !== 'cancelled';
-}).length;
-
-document.getElementById('today-appointments').textContent = todayAppointments;
-
-// Revenus cette semaine
-const startOfWeek = new Date(today);
-startOfWeek.setDate(today.getDate() - today.getDay() + 1); // Lundi
-
-const endOfWeek = new Date(startOfWeek);
-endOfWeek.setDate(startOfWeek.getDate() + 7); // Dimanche prochain
-
-const weeklyRevenue = reservations.filter(res => {
-    const resDate = new Date(res.dateTime);
-    return resDate >= startOfWeek && resDate < endOfWeek && res.status !== 'cancelled';
-}).reduce((sum, res) => sum + res.totalPrice, 0);
-
-document.getElementById('weekly-revenue').textContent = weeklyRevenue + '€';
-
-// Nouveaux clients ce mois
-const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-
-const phoneNumbersSet = new Set();
-const monthlyClientsCount = reservations.filter(res => {
-    const resDate = new Date(res.dateTime);
-    if (resDate >= startOfMonth && resDate <= endOfMonth) {
-        phoneNumbersSet.add(res.phone);
-        return true;
-    }
-    return false;
-}).length;
-
-document.getElementById('monthly-clients').textContent = phoneNumbersSet.size;
-
-// Croissance mensuelle (comparaison avec le mois précédent)
-const startOfPrevMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-const endOfPrevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
-
-const prevMonthRevenue = reservations.filter(res => {
-    const resDate = new Date(res.dateTime);
-    return resDate >= startOfPrevMonth && resDate <= endOfPrevMonth && res.status !== 'cancelled';
-}).reduce((sum, res) => sum + res.totalPrice, 0);
-
-const currentMonthRevenue = reservations.filter(res => {
-    const resDate = new Date(res.dateTime);
-    return resDate >= startOfMonth && resDate <= endOfMonth && res.status !== 'cancelled';
-}).reduce((sum, res) => sum + res.totalPrice, 0);
-
-let growthRate = 0;
-if (prevMonthRevenue > 0) {
-    growthRate = ((currentMonthRevenue - prevMonthRevenue) / prevMonthRevenue) * 100;
-}
-
-document.getElementById('growth-rate').textContent = growthRate.toFixed(0) + '%';
-}
-
-function initCalendar() {
-const now = new Date();
-const currentMonth = now.getMonth();
-const currentYear = now.getFullYear();
-
-generateCalendar(currentMonth, currentYear);
-
-// Écouteurs pour les boutons de navigation
-document.getElementById('prev-month').addEventListener('click', () => {
-    const monthTitle = document.getElementById('calendar-month-year').textContent;
-    const [month, year] = monthTitle.split(' ');
-    
-    const monthIndex = [
-        'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-        'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
-    ].indexOf(month);
-    
-    const prevMonthIndex = monthIndex - 1;
-    const prevYear = parseInt(year);
-    
-    if (prevMonthIndex < 0) {
-        generateCalendar(11, prevYear - 1);
-    } else {
-        generateCalendar(prevMonthIndex, prevYear);
-    }
-});
-
-document.getElementById('next-month').addEventListener('click', () => {
-    const monthTitle = document.getElementById('calendar-month-year').textContent;
-    const [month, year] = monthTitle.split(' ');
-    
-    const monthIndex = [
-        'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-        'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
-    ].indexOf(month);
-    
-    const nextMonthIndex = monthIndex + 1;
-    const nextYear = parseInt(year);
-    
-    if (nextMonthIndex > 11) {
-        generateCalendar(0, nextYear + 1);
-    } else {
-        generateCalendar(nextMonthIndex, nextYear);
-    }
-});
-}
-
-function generateCalendar(month, year) {
-const calendarDays = document.getElementById('calendar-days');
-calendarDays.innerHTML = '';
-
-// Nom du mois et année
-const monthNames = [
-    'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-    'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
-];
-
-document.getElementById('calendar-month-year').textContent = `${monthNames[month]} ${year}`;
-
-// Premier jour du mois
-const firstDay = new Date(year, month, 1);
-// Dernier jour du mois
-const lastDay = new Date(year, month + 1, 0);
-
-// Jour de la semaine du premier jour (0 = Dimanche, 1 = Lundi, etc.)
-let dayOfWeek = firstDay.getDay();
-// Ajuster pour que la semaine commence le lundi
-dayOfWeek = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-
-// Récupérer les rendez-vous du mois
-const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
-const monthReservations = reservations.filter(res => {
-    const resDate = new Date(res.dateTime);
-    return resDate.getMonth() === month && resDate.getFullYear() === year && res.status !== 'cancelled';
-});
-
-// Calculer les jours avec des rendez-vous
-const daysWithEvents = {};
-monthReservations.forEach(res => {
-    const day = new Date(res.dateTime).getDate();
-    if (!daysWithEvents[day]) {
-        daysWithEvents[day] = [];
-    }
-    daysWithEvents[day].push(res);
-});
-
-// Jours du mois précédent
-if (dayOfWeek > 0) {
-    const prevMonthLastDay = new Date(year, month, 0).getDate();
-    for (let i = dayOfWeek - 1; i >= 0; i--) {
-        const dayDiv = document.createElement('div');
-        dayDiv.className = 'calendar-day past';
-        dayDiv.textContent = prevMonthLastDay - i;
-        calendarDays.appendChild(dayDiv);
-    }
-}
-
-// Jours du mois actuel
-const today = new Date();
-for (let i = 1; i <= lastDay.getDate(); i++) {
-    const dayDiv = document.createElement('div');
-    dayDiv.className = 'calendar-day';
-    
-    // Jour actuel
-    if (year === today.getFullYear() && month === today.getMonth() && i === today.getDate()) {
-        dayDiv.classList.add('today');
-    }
-    
-    // Jours avec des rendez-vous
-    if (daysWithEvents[i]) {
-        dayDiv.classList.add('has-events');
-    }
-    
-    dayDiv.textContent = i;
-    
-    // Ajouter un événement pour afficher les rendez-vous du jour
-    dayDiv.addEventListener('click', () => {
-        showDayAppointments(i, month, year);
-    });
-    
-    calendarDays.appendChild(dayDiv);
-}
-
-// Jours du mois suivant
-const totalDays = dayOfWeek + lastDay.getDate();
-const remainingCells = 42 - totalDays; // 6 semaines * 7 jours = 42
-
-for (let i = 1; i <= remainingCells; i++) {
-    const dayDiv = document.createElement('div');
-    dayDiv.className = 'calendar-day past';
-    dayDiv.textContent = i;
-    calendarDays.appendChild(dayDiv);
-}
-}
-
-function showDayAppointments(day, month, year) {
-const date = new Date(year, month, day);
-
-// Formater la date
-const formattedDate = date.toLocaleDateString('fr-FR', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-});
-
-// Récupérer les rendez-vous de ce jour
-const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
-const dayReservations = reservations.filter(res => {
-    const resDate = new Date(res.dateTime);
-    return resDate.getDate() === day && 
-           resDate.getMonth() === month && 
-           resDate.getFullYear() === year && 
-           res.status !== 'cancelled';
-});
-
-// Trier par heure
-dayReservations.sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
-
-let content = `<h3>Rendez-vous du ${formattedDate}</h3>`;
-
-if (dayReservations.length === 0) {
-    content += `<p>Aucun rendez-vous pour ce jour.</p>`;
-} else {
-    content += `<ul class="day-appointments">`;
-    dayReservations.forEach(res => {
-        const time = new Date(res.dateTime).toLocaleTimeString('fr-FR', {
+    // Remplir le tableau
+    displayReservations.forEach((res, index) => {
+        // Formater la date et l'heure
+        const dateTime = new Date(res.dateTime);
+        const formattedDate = dateTime.toLocaleDateString('fr-FR', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+        
+        const formattedTime = dateTime.toLocaleTimeString('fr-FR', {
             hour: '2-digit',
             minute: '2-digit'
         });
         
-        content += `
-            <li>
-                <strong>${time}</strong> - ${res.name}<br>
-                ${res.service} (${res.model}) - ${res.totalPrice}€
-            </li>
+        // Déterminer la classe de statut
+        let statusClass = '';
+        let statusText = '';
+        
+        switch(res.status) {
+            case 'pending':
+                statusClass = 'status-pending';
+                statusText = 'En attente';
+                break;
+            case 'confirmed':
+                statusClass = 'status-confirmed';
+                statusText = 'Confirmé';
+                break;
+            default:
+                statusClass = 'status-pending';
+                statusText = 'En attente';
+        }
+        
+        // Créer la ligne
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${res.name}</td>
+            <td>${res.service} (${res.model})</td>
+            <td>${formattedDate} - ${formattedTime}</td>
+            <td>${res.totalPrice}€</td>
+            <td><span class="status ${statusClass}">${statusText}</span></td>
+            <td>
+                <div class="table-actions">
+                    <button class="action-btn view"><i class="fas fa-eye"></i></button>
+                    <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                    <button class="action-btn delete"><i class="fas fa-trash"></i></button>
+                </div>
+            </td>
         `;
+        
+        // Ajouter les événements pour les boutons d'action
+        const realIndex = reservations.findIndex(r => 
+            r.service === res.service && 
+            r.dateTime === res.dateTime &&
+            r.phone === res.phone
+        );
+        
+        row.querySelector('.view').addEventListener('click', () => viewAppointmentDetails(realIndex));
+        row.querySelector('.edit').addEventListener('click', () => showEditAppointmentModal(realIndex));
+        row.querySelector('.delete').addEventListener('click', () => deleteAppointment(realIndex));
+        
+        tbody.appendChild(row);
     });
-    content += `</ul>`;
-    
-    content += `<button class="btn btn-primary day-add-btn">+ Ajouter un rendez-vous</button>`;
 }
 
-// Trouver l'index des réservations dans le tableau complet
-const indexes = dayReservations.map(dayRes => {
-    return reservations.findIndex(res => 
-        res.service === dayRes.service && 
-        res.dateTime === dayRes.dateTime &&
-        res.phone === dayRes.phone
-    );
-});
+function displayPopularServices() {
+    const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
 
-// Afficher les détails
-document.getElementById('details-content').innerHTML = content;
-detailsModal.style.display = 'flex';
+    // Compter les occurrences de chaque service
+    const serviceCounts = {};
 
-// Ajouter un écouteur pour le bouton de fermeture
-document.getElementById('details-close-btn').addEventListener('click', function() {
-    detailsModal.style.display = 'none';
-});
+    reservations.forEach(res => {
+        if (res.status !== 'cancelled') {
+            const serviceKey = res.service;
+            if (!serviceCounts[serviceKey]) {
+                serviceCounts[serviceKey] = {
+                    name: res.service,
+                    category: res.category,
+                    count: 0,
+                    revenue: 0
+                };
+            }
+            serviceCounts[serviceKey].count++;
+            serviceCounts[serviceKey].revenue += res.totalPrice;
+        }
+    });
 
-// Ajouter un écouteur pour le bouton d'ajout de rendez-vous
-const addBtn = document.querySelector('.day-add-btn');
-if (addBtn) {
-    addBtn.addEventListener('click', function() {
-        // Fermer la modal de détails
+    // Convertir en tableau et trier par nombre de réservations
+    const popularServices = Object.values(serviceCounts).sort((a, b) => b.count - a.count);
+
+    // Limiter à 5 services
+    const topServices = popularServices.slice(0, 5);
+
+    const container = document.getElementById('popular-services');
+    container.innerHTML = '';
+
+    // Afficher un message si aucun service
+    if (topServices.length === 0) {
+        container.innerHTML = '<p style="text-align: center;">Aucune donnée disponible</p>';
+        return;
+    }
+
+    // Afficher les services populaires
+    topServices.forEach(service => {
+        const serviceItem = document.createElement('div');
+        serviceItem.className = 'service-item';
+        
+        serviceItem.innerHTML = `
+            <div class="service-icon">
+                <i class="fas fa-cut"></i>
+            </div>
+            <div class="service-info">
+                <div class="service-name">${service.name}</div>
+                <div class="service-price">${service.count} réservation${service.count > 1 ? 's' : ''} - ${service.revenue}€</div>
+            </div>
+            <div class="service-actions">
+                <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+            </div>
+        `;
+        
+        // Ajouter un événement pour le bouton d'édition
+        serviceItem.querySelector('.edit').addEventListener('click', () => {
+            showEditServiceModal(service.category, service.name);
+        });
+        
+        container.appendChild(serviceItem);
+    });
+}
+
+function updateDashboardStats() {
+    const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+
+    // Rendez-vous aujourd'hui
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const todayAppointments = reservations.filter(res => {
+        const resDate = new Date(res.dateTime);
+        return resDate >= today && resDate < tomorrow && res.status !== 'cancelled';
+    }).length;
+
+    document.getElementById('today-appointments').textContent = todayAppointments;
+
+    // Revenus cette semaine
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay() + 1); // Lundi
+
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 7); // Dimanche prochain
+
+    const weeklyRevenue = reservations.filter(res => {
+        const resDate = new Date(res.dateTime);
+        return resDate >= startOfWeek && resDate < endOfWeek && res.status !== 'cancelled';
+    }).reduce((sum, res) => sum + res.totalPrice, 0);
+
+    document.getElementById('weekly-revenue').textContent = weeklyRevenue + '€';
+
+    // Nouveaux clients ce mois
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+    const phoneNumbersSet = new Set();
+    const monthlyClientsCount = reservations.filter(res => {
+        const resDate = new Date(res.dateTime);
+        if (resDate >= startOfMonth && resDate <= endOfMonth) {
+            phoneNumbersSet.add(res.phone);
+            return true;
+        }
+        return false;
+    }).length;
+
+    document.getElementById('monthly-clients').textContent = phoneNumbersSet.size;
+
+    // Croissance mensuelle (comparaison avec le mois précédent)
+    const startOfPrevMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+    const endOfPrevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+
+    const prevMonthRevenue = reservations.filter(res => {
+        const resDate = new Date(res.dateTime);
+        return resDate >= startOfPrevMonth && resDate <= endOfPrevMonth && res.status !== 'cancelled';
+    }).reduce((sum, res) => sum + res.totalPrice, 0);
+
+    const currentMonthRevenue = reservations.filter(res => {
+        const resDate = new Date(res.dateTime);
+        return resDate >= startOfMonth && resDate <= endOfMonth && res.status !== 'cancelled';
+    }).reduce((sum, res) => sum + res.totalPrice, 0);
+
+    let growthRate = 0;
+    if (prevMonthRevenue > 0) {
+        growthRate = ((currentMonthRevenue - prevMonthRevenue) / prevMonthRevenue) * 100;
+    }
+
+    document.getElementById('growth-rate').textContent = growthRate.toFixed(0) + '%';
+}
+
+function initCalendar() {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    generateCalendar(currentMonth, currentYear);
+
+    // Écouteurs pour les boutons de navigation
+    document.getElementById('prev-month').addEventListener('click', () => {
+        const monthTitle = document.getElementById('calendar-month-year').textContent;
+        const [month, year] = monthTitle.split(' ');
+        
+        const monthIndex = [
+            'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+            'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+        ].indexOf(month);
+        
+        const prevMonthIndex = monthIndex - 1;
+        const prevYear = parseInt(year);
+        
+        if (prevMonthIndex < 0) {
+            generateCalendar(11, prevYear - 1);
+        } else {
+            generateCalendar(prevMonthIndex, prevYear);
+        }
+    });
+
+    document.getElementById('next-month').addEventListener('click', () => {
+        const monthTitle = document.getElementById('calendar-month-year').textContent;
+        const [month, year] = monthTitle.split(' ');
+        
+        const monthIndex = [
+            'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+            'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+        ].indexOf(month);
+        
+        const nextMonthIndex = monthIndex + 1;
+        const nextYear = parseInt(year);
+        
+        if (nextMonthIndex > 11) {
+            generateCalendar(0, nextYear + 1);
+        } else {
+            generateCalendar(nextMonthIndex, nextYear);
+        }
+    });
+}
+
+function generateCalendar(month, year) {
+    const calendarDays = document.getElementById('calendar-days');
+    calendarDays.innerHTML = '';
+
+    // Nom du mois et année
+    const monthNames = [
+        'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+        'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+    ];
+
+    document.getElementById('calendar-month-year').textContent = `${monthNames[month]} ${year}`;
+
+    // Premier jour du mois
+    const firstDay = new Date(year, month, 1);
+    // Dernier jour du mois
+    const lastDay = new Date(year, month + 1, 0);
+
+    // Jour de la semaine du premier jour (0 = Dimanche, 1 = Lundi, etc.)
+    let dayOfWeek = firstDay.getDay();
+    // Ajuster pour que la semaine commence le lundi
+    dayOfWeek = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+
+    // Récupérer les rendez-vous du mois
+    const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+    const monthReservations = reservations.filter(res => {
+        const resDate = new Date(res.dateTime);
+        return resDate.getMonth() === month && resDate.getFullYear() === year && res.status !== 'cancelled';
+    });
+
+    // Calculer les jours avec des rendez-vous
+    const daysWithEvents = {};
+    monthReservations.forEach(res => {
+        const day = new Date(res.dateTime).getDate();
+        if (!daysWithEvents[day]) {
+            daysWithEvents[day] = [];
+        }
+        daysWithEvents[day].push(res);
+    });
+
+    // Jours du mois précédent
+    if (dayOfWeek > 0) {
+        const prevMonthLastDay = new Date(year, month, 0).getDate();
+        for (let i = dayOfWeek - 1; i >= 0; i--) {
+            const dayDiv = document.createElement('div');
+            dayDiv.className = 'calendar-day past';
+            dayDiv.textContent = prevMonthLastDay - i;
+            calendarDays.appendChild(dayDiv);
+        }
+    }
+
+    // Jours du mois actuel
+    const today = new Date();
+    for (let i = 1; i <= lastDay.getDate(); i++) {
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'calendar-day';
+        
+        // Jour actuel
+        if (year === today.getFullYear() && month === today.getMonth() && i === today.getDate()) {
+            dayDiv.classList.add('today');
+        }
+        
+        // Jours avec des rendez-vous
+        if (daysWithEvents[i]) {
+            dayDiv.classList.add('has-events');
+        }
+        
+        dayDiv.textContent = i;
+        
+        // Ajouter un événement pour afficher les rendez-vous du jour
+        dayDiv.addEventListener('click', () => {
+            showDayAppointments(i, month, year);
+        });
+        
+        calendarDays.appendChild(dayDiv);
+    }
+
+    // Jours du mois suivant
+    const totalDays = dayOfWeek + lastDay.getDate();
+    const remainingCells = 42 - totalDays; // 6 semaines * 7 jours = 42
+
+    for (let i = 1; i <= remainingCells; i++) {
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'calendar-day past';
+        dayDiv.textContent = i;
+        calendarDays.appendChild(dayDiv);
+    }
+}
+
+function showDayAppointments(day, month, year) {
+    const date = new Date(year, month, day);
+
+    // Formater la date
+    const formattedDate = date.toLocaleDateString('fr-FR', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+
+    // Récupérer les rendez-vous de ce jour
+    const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+    const dayReservations = reservations.filter(res => {
+        const resDate = new Date(res.dateTime);
+        return resDate.getDate() === day && 
+               resDate.getMonth() === month && 
+               resDate.getFullYear() === year && 
+               res.status !== 'cancelled';
+    });
+
+    // Trier par heure
+    dayReservations.sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
+
+    let content = `<h3>Rendez-vous du ${formattedDate}</h3>`;
+
+    if (dayReservations.length === 0) {
+        content += `<p>Aucun rendez-vous pour ce jour.</p>`;
+    } else {
+        content += `<ul class="day-appointments">`;
+        dayReservations.forEach(res => {
+            const time = new Date(res.dateTime).toLocaleTimeString('fr-FR', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            content += `
+                <li>
+                    <strong>${time}</strong> - ${res.name}<br>
+                    ${res.service} (${res.model}) - ${res.totalPrice}€
+                </li>
+            `;
+        });
+        content += `</ul>`;
+        
+        content += `<button class="btn btn-primary day-add-btn">+ Ajouter un rendez-vous</button>`;
+    }
+
+    // Trouver l'index des réservations dans le tableau complet
+    const indexes = dayReservations.map(dayRes => {
+        return reservations.findIndex(res => 
+            res.service === dayRes.service && 
+            res.dateTime === dayRes.dateTime &&
+            res.phone === dayRes.phone
+        );
+    });
+
+    // Afficher les détails
+    document.getElementById('details-content').innerHTML = content;
+    detailsModal.style.display = 'flex';
+
+    // Ajouter un écouteur pour le bouton de fermeture
+    document.getElementById('details-close-btn').addEventListener('click', function() {
         detailsModal.style.display = 'none';
-        
-        // Préparer la date pour le formulaire
-        const formattedDateForInput = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-        
-        // Ouvrir la modal d'ajout de rendez-vous avec la date pré-remplie
-        showAddAppointmentModal();
-        document.getElementById('date-input').value = formattedDateForInput;
     });
-}
+
+    // Ajouter un écouteur pour le bouton d'ajout de rendez-vous
+    const addBtn = document.querySelector('.day-add-btn');
+    if (addBtn) {
+        addBtn.addEventListener('click', function() {
+            // Fermer la modal de détails
+            detailsModal.style.display = 'none';
+            
+            // Préparer la date pour le formulaire
+            const formattedDateForInput = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+            
+            // Ouvrir la modal d'ajout de rendez-vous avec la date pré-remplie
+            showAddAppointmentModal();
+            document.getElementById('date-input').value = formattedDateForInput;
+        });
+    }
 }
 
 // ======== INITIALISATION DE L'INTERFACE MODALES ========
 
 function initModals() {
-// Fermer les modales lorsqu'on clique sur le X
-document.querySelectorAll('.modal-close').forEach(closeBtn => {
-    closeBtn.addEventListener('click', function() {
-        this.closest('.modal').style.display = 'none';
+    // Fermer les modales lorsqu'on clique sur le X
+    document.querySelectorAll('.modal-close').forEach(closeBtn => {
+        closeBtn.addEventListener('click', function() {
+            this.closest('.modal').style.display = 'none';
+        });
     });
-});
 
-// Fermer les modales lorsqu'on clique en dehors
-document.querySelectorAll('.modal').forEach(modal => {
-    modal.addEventListener('click', function(e) {
-        if (e.target === this) {
-            this.style.display = 'none';
-        }
+    // Fermer les modales lorsqu'on clique en dehors
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.style.display = 'none';
+            }
+        });
     });
-});
 }
 
 // Ajoutez ce code à la fin de votre fichier admin.js
@@ -1831,3 +1830,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Lancer l'initialisation au chargement de la page
 document.addEventListener('DOMContentLoaded', init);
+
+// ======== FONCTION DE RESET ADMIN ========
+function resetAdminData() {
+    if (confirm('Voulez-vous vraiment supprimer tous les rendez-vous, clients et stats ?')) {
+        localStorage.removeItem('reservations');
+        localStorage.removeItem('clients');
+        location.reload();
+    }
+}
+
+// Ajouter le bouton dans le dashboard si absent
+if (!document.getElementById('reset-admin-btn')) {
+    document.addEventListener('DOMContentLoaded', function() {
+        const dashboardHeader = document.querySelector('#dashboard .header');
+        if (dashboardHeader) {
+            const resetBtn = document.createElement('button');
+            resetBtn.id = 'reset-admin-btn';
+            resetBtn.className = 'btn btn-danger';
+            resetBtn.innerHTML = '<i class="fas fa-trash"></i> Réinitialiser l\'admin';
+            resetBtn.style.marginLeft = '20px';
+            resetBtn.onclick = resetAdminData;
+            dashboardHeader.appendChild(resetBtn);
+        }
+    });
+}
