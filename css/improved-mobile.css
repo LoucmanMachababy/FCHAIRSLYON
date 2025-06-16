@@ -1,0 +1,843 @@
+/* improved-mobile.css */
+/* CSS optimisé pour améliorer l'expérience mobile */
+
+/* ===== AJUSTEMENTS GÉNÉRAUX MOBILE ===== */
+@media (max-width: 768px) {
+    /* Éléments de base */
+    body {
+        font-size: 16px; /* Taille de base pour meilleure lisibilité */
+    }
+    
+    .container {
+        padding: 10px;
+    }
+    
+    /* En-tête et navigation */
+    header {
+        padding: 15px 10px;
+    }
+    
+    .logo {
+        width: 90px;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+    }
+    
+    /* Menu mobile hamburger */
+    .mobile-menu-toggle {
+        display: block;
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        background: none;
+        border: none;
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+        z-index: 1000;
+    }
+    
+    .mobile-menu-toggle span {
+        display: block;
+        width: 24px;
+        height: 3px;
+        background-color: var(--secondary);
+        margin: 5px auto;
+        transition: all 0.3s ease;
+    }
+    
+    .mobile-menu-toggle.active span:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+    }
+    
+    .mobile-menu-toggle.active span:nth-child(2) {
+        opacity: 0;
+    }
+    
+    .mobile-menu-toggle.active span:nth-child(3) {
+        transform: rotate(-45deg) translate(5px, -5px);
+    }
+    
+    nav {
+        padding: 0;
+    }
+    
+    nav ul {
+        display: none;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background-color: #fff;
+        padding: 60px 20px 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        z-index: 999;
+    }
+    
+    nav ul.show-menu {
+        display: flex;
+    }
+    
+    nav li {
+        margin: 5px 0;
+        width: 100%;
+    }
+    
+    nav a {
+        display: block;
+        padding: 12px;
+        text-align: center;
+        font-size: 1.1rem;
+    }
+    
+    /* Arrière-plan overlay pour le menu */
+    .menu-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 998;
+        display: none;
+    }
+    
+    .menu-overlay.active {
+        display: block;
+    }
+    
+    /* Services */
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .service-card {
+        margin-bottom: 15px;
+    }
+    
+    .service-title {
+        font-size: 1.2rem;
+    }
+    
+    .service-image {
+        height: 180px;
+    }
+    
+    /* Formulaires et sélecteurs */
+    .form-row {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .form-group {
+        width: 100%;
+    }
+    
+    .form-input, 
+    .form-select, 
+    .form-button {
+        padding: 14px; /* Plus grand pour tactile */
+        font-size: 16px; /* Éviter le zoom sur iOS */
+    }
+    
+    .form-label {
+        margin-bottom: 8px;
+        font-size: 1rem;
+    }
+    
+    .form-button {
+        margin-top: 25px;
+    }
+    
+    /* Boutons plus grands sur mobile */
+    .service-select {
+        padding: 12px;
+        font-weight: 600;
+    }
+    
+    /* About section */
+    .about-content {
+        flex-direction: column;
+    }
+    
+    .about-image, .about-text {
+        width: 100%;
+    }
+    
+    /* Footer */
+    .footer-links {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+}
+
+/* ===== AMÉLIORATIONS DE L'INTERFACE ADMINISTRATEUR ===== */
+@media (max-width: 768px) {
+    /* Sidebar admin */
+    .sidebar {
+        width: 85%;
+        max-width: 280px;
+        position: fixed;
+        left: -100%;
+        top: 0;
+        bottom: 0;
+        z-index: 1050;
+        transition: left 0.3s ease;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .sidebar.show-sidebar {
+        left: 0;
+    }
+    
+    /* Bouton d'accès au menu admin */
+    .mobile-menu-toggle-admin {
+        display: block;
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        width: 40px;
+        height: 40px;
+        background-color: var(--primary);
+        border: none;
+        border-radius: 5px;
+        color: var(--secondary);
+        font-size: 1.2rem;
+        cursor: pointer;
+        z-index: 1010;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Contenu principal admin */
+    .content {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 60px 15px 15px;
+    }
+    
+    /* Header admin */
+    .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 900;
+        padding: 15px 60px;
+        margin-bottom: 0;
+        border-radius: 0;
+    }
+    
+    .page-title {
+        font-size: 1.3rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
+        text-align: center;
+    }
+    
+    /* Cartes et conteneurs */
+    .card {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .card-title {
+        font-size: 1.1rem;
+    }
+    
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .card-actions {
+        align-self: flex-end;
+        display: flex;
+        justify-content: flex-end;
+        width: 100%;
+    }
+    
+    /* Tableaux responsifs */
+    .table-responsive {
+        margin: 0 -15px;
+        width: calc(100% + 30px);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    table {
+        min-width: 650px;
+    }
+    
+    /* Mode carte pour les tableaux */
+    table.responsive-table {
+        min-width: auto;
+    }
+    
+    .responsive-table thead {
+        display: none;
+    }
+    
+    .responsive-table tbody tr {
+        display: block;
+        margin-bottom: 15px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+        border-radius: 5px;
+    }
+    
+    .responsive-table tbody td {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 15px;
+        text-align: right;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .responsive-table tbody td:before {
+        content: attr(data-label);
+        font-weight: 600;
+        text-align: left;
+        padding-right: 10px;
+    }
+    
+    .responsive-table tbody td:last-child {
+        border-bottom: none;
+    }
+    
+    /* Amélioration du calendrier */
+    .calendar {
+        margin: 0 -15px;
+        border-radius: 0;
+    }
+    
+    .calendar-weekdays div {
+        font-size: 0.8rem;
+    }
+    
+    .calendar-day {
+        min-height: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+    }
+    
+    .calendar-day.today:after {
+        width: 4px;
+        height: 4px;
+    }
+    
+    /* ===== GESTION DES DISPONIBILITÉS ===== */
+    #hours-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+    
+    .hour-item {
+        margin-bottom: 0;
+    }
+    
+    .hour-label {
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        padding: 10px 5px;
+    }
+    
+    .hour-checkbox {
+        width: 18px;
+        height: 18px;
+        margin-right: 5px;
+    }
+    
+    /* Bouton de sauvegarde des disponibilités */
+    #save-availability {
+        display: block;
+        width: 100%;
+        padding: 14px;
+        margin-top: 20px;
+        font-size: 1.1rem;
+    }
+    
+    /* Modales */
+    .modal-content {
+        width: 90%;
+        max-height: 85vh;
+        overflow-y: auto;
+        border-radius: 10px;
+    }
+    
+    .modal-title {
+        font-size: 1.3rem;
+    }
+    
+    /* Animation des modales */
+    @keyframes fadeInUp {
+        from {
+            transform: translateY(40px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    
+    .modal-content {
+        animation: fadeInUp 0.3s ease forwards;
+    }
+}
+
+/* ===== TRÈS PETITS ÉCRANS ===== */
+@media (max-width: 480px) {
+    /* Éléments généraux */
+    .section-title {
+        font-size: 1.3rem;
+    }
+    
+    /* Services */
+    .service-image {
+        height: 150px;
+    }
+    
+    /* Formulaires */
+    .form-input, 
+    .form-select, 
+    .form-button {
+        padding: 12px;
+    }
+    
+    /* Gestion des disponibilités */
+    #hours-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ===== AMÉLIORATIONS TACTILES ===== */
+@media (hover: none) and (pointer: coarse) {
+    /* Plus grands pour le toucher */
+    .service-select,
+    .form-button,
+    .btn,
+    .action-btn {
+        min-height: 44px; /* Taille minimale recommandée pour zones tactiles */
+    }
+    
+    .calendar-day {
+        min-height: 40px;
+        min-width: 40px;
+    }
+    
+    /* Feedback tactile */
+    .service-card:active,
+    .form-button:active,
+    .btn:active {
+        transform: scale(0.98);
+        transition: transform 0.1s ease-in-out;
+    }
+    
+    /* Sélecteurs plus grands */
+    input[type="checkbox"], 
+    input[type="radio"] {
+        transform: scale(1.2);
+    }
+    
+    /* Style sélection sur touch */
+    .touch-highlight {
+        -webkit-tap-highlight-color: rgba(255, 224, 232, 0.3);
+    }
+}
+
+/* ===== OPTIMISATIONS SAFARI iOS ===== */
+@supports (-webkit-touch-callout: none) {
+    /* Désactiver le zoom automatique sur iOS */
+    input, select, textarea {
+        font-size: 16px !important;
+    }
+    
+/* (Suite du fichier improved-mobile.css) */
+
+    /* Correction bounce scroll iOS */
+    .modal-content {
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Éviter les doubles tapotements sur iOS */
+    button, 
+    a, 
+    [role="button"], 
+    .service-card, 
+    .form-button {
+        touch-action: manipulation;
+    }
+    
+    /* Correction pour le zoom iOS sur les inputs */
+    @supports (-webkit-overflow-scrolling: touch) {
+        select,
+        textarea,
+        input {
+            font-size: 16px !important;
+        }
+    }
+}
+
+/* ===== INDICATEURS DE CHARGEMENT ET FEEDBACK ===== */
+@media (max-width: 768px) {
+    /* Ajouter un indicateur de chargement */
+    .loading {
+        position: relative;
+    }
+    
+    .loading::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 30px;
+        height: 30px;
+        border: 3px solid rgba(255, 224, 232, 0.3);
+        border-top: 3px solid var(--primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: translate(-50%, -50%) rotate(0deg); }
+        100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    
+    /* Style spécial pour les boutons en cours de traitement */
+    .btn-processing,
+    .form-button.processing {
+        background-color: #f0f0f0 !important;
+        color: #999 !important;
+        position: relative;
+        padding-left: 35px !important;
+    }
+    
+    .btn-processing::before,
+    .form-button.processing::before {
+        content: '';
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(0, 0, 0, 0.1);
+        border-top: 2px solid #555;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    /* Messages de notification toast */
+    .toast-notification {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 12px 20px;
+        background-color: rgba(51, 51, 51, 0.9);
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        z-index: 2000;
+        font-size: 0.9rem;
+        max-width: 80%;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.3s, transform 0.3s;
+    }
+    
+    .toast-notification.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+    
+    .toast-notification.hide {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
+    
+    .toast-notification.success {
+        background-color: rgba(76, 175, 80, 0.9);
+    }
+    
+    .toast-notification.error {
+        background-color: rgba(244, 67, 54, 0.9);
+    }
+}
+
+/* ===== ONGLETS MOBILES AMÉLIORÉS ===== */
+@media (max-width: 768px) {
+    .tabs {
+        display: flex;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+    }
+    
+    .tab-button {
+        flex: 1;
+        min-width: 120px;
+        scroll-snap-align: start;
+        padding: 12px 15px;
+        white-space: nowrap;
+        font-size: 0.9rem;
+    }
+    
+    /* Animation des onglets */
+    .tab-content {
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity 0.3s, transform 0.3s;
+    }
+    
+    .tab-content.active {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== ANIMATIONS OPTIMISÉES POUR MOBILE ===== */
+@media (max-width: 768px) {
+    /* Réduire les animations pour les appareils à faible puissance */
+    @media (prefers-reduced-motion: reduce) {
+        * {
+            animation-duration: 0.01ms !important;
+            transition-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+        }
+    }
+    
+    /* Animation de page */
+    @keyframes pageTransition {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    main, .section {
+        animation: pageTransition 0.3s ease forwards;
+    }
+    
+    /* Animations des éléments de l'interface */
+    .btn:active, 
+    .form-button:active, 
+    .action-btn:active {
+        transform: scale(0.97);
+    }
+}
+
+/* ===== AMÉLIORATIONS SPÉCIFIQUES POUR LA GESTION DES DISPONIBILITÉS ===== */
+@media (max-width: 768px) {
+    /* Conteneur des disponibilités */
+    .availability-container {
+        flex-direction: column;
+    }
+    
+    /* Section de calendrier */
+    .availability-calendar {
+        margin-bottom: 20px;
+    }
+    
+    /* Section des heures */
+    .time-slots-container {
+        padding: 15px;
+    }
+    
+    #selected-date-display {
+        font-size: 1.1rem;
+        text-align: center;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    /* Grille d'heures optimisée */
+    #hours-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        max-height: 400px;
+        overflow-y: auto;
+        padding: 5px;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .hour-item {
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        padding: 2px;
+        text-align: center;
+    }
+    
+    .hour-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 5px;
+        cursor: pointer;
+        border-radius: 6px;
+        transition: background-color 0.2s;
+    }
+    
+    .hour-label:active {
+        background-color: rgba(255, 224, 232, 0.5);
+    }
+    
+    /* Style des cases à cocher */
+    .hour-checkbox {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 18px;
+        height: 18px;
+        border: 2px solid var(--primary);
+        border-radius: 4px;
+        margin-right: 8px;
+        position: relative;
+    }
+    
+    .hour-checkbox:checked {
+        background-color: var(--primary);
+    }
+    
+    .hour-checkbox:checked::after {
+        content: '✓';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 12px;
+    }
+    
+    /* Bouton de sauvegarde amélioré */
+    #save-availability {
+        width: 100%;
+        padding: 14px;
+        font-size: 1rem;
+        font-weight: 600;
+        margin-top: 20px;
+        border-radius: 8px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    #save-availability::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 5px;
+        height: 5px;
+        background: rgba(255, 255, 255, 0.5);
+        opacity: 0;
+        border-radius: 100%;
+        transform: scale(1, 1) translate(-50%);
+        transform-origin: 50% 50%;
+    }
+    
+    #save-availability:active::after {
+        animation: ripple 1s ease-out;
+    }
+    
+    @keyframes ripple {
+        0% { transform: scale(0, 0); opacity: 0.5; }
+        20% { transform: scale(25, 25); opacity: 0.3; }
+        100% { opacity: 0; transform: scale(40, 40); }
+    }
+}
+
+/* ===== ADAPTATION DES RÉSERVATIONS ===== */
+@media (max-width: 768px) {
+    /* Liste des réservations */
+    .reservation-item {
+        flex-direction: column;
+        padding: 15px;
+    }
+    
+    .reservation-info {
+        margin-bottom: 10px;
+        width: 100%;
+    }
+    
+    .reservation-name {
+        font-size: 1.1rem;
+    }
+    
+    .reservation-details {
+        margin: 5px 0;
+    }
+    
+    .reservation-date {
+        font-size: 0.85rem;
+    }
+    
+    .reservation-price {
+        align-self: flex-start;
+    }
+    
+    .reservation-actions {
+        align-self: flex-end;
+        margin-top: -30px;
+    }
+    
+    /* Tableau récapitulatif */
+    .reservation-summary {
+        padding: 15px;
+    }
+    
+    .reservation-summary h3 {
+        font-size: 1.1rem;
+        margin-bottom: 12px;
+    }
+}
+
+/* Styles pour les écrans tactiles */
+@media (hover: none) {
+    .form-button, .btn, .service-select, .hour-label {
+        cursor: default; /* Éviter le curseur pointer sur les appareils tactiles */
+    }
+}
+
+/* ===== STYLE ADAPTATIF POUR LE THÈME ORIGINAL ===== */
+@media (max-width: 768px) {
+    /* Conserver les couleurs du thème original */
+    header {
+        background-color: var(--primary);
+    }
+    
+    .form-button, .btn-primary {
+        background-color: var(--primary);
+        color: var(--secondary);
+    }
+    
+    nav a.active, nav a:active {
+        background-color: var(--primary);
+    }
+    
+    /* Ajustements de contraste pour meilleure lisibilité */
+    .section-title {
+        color: var(--secondary);
+    }
+    
+    .form-label {
+        color: var(--secondary);
+    }
+    
+    /* Statuts avec bon contraste */
+    .status {
+        font-weight: 600;
+    }
+}

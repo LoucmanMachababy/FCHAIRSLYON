@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FcHairsLyon - Administration</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/availability.css">
+<link rel="stylesheet" href="../css/improved-mobile.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="FcHairsLyon Logo" class="logo">
+                <h2>FcHairsLyon</h2>
+                <p>Administration</p>
+            </div>
+            
+            <div class="sidebar-menu">
+                <a href="#dashboard" class="menu-item active" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Tableau de bord
+                </a>
+                <a href="#appointments" class="menu-item" data-section="appointments">
+                    <i class="fas fa-calendar-alt"></i>
+                    Rendez-vous
+                </a>
+                <a href="#clients" class="menu-item" data-section="clients">
+                    <i class="fas fa-users"></i>
+                    Clients
+                </a>
+                <a href="#services" class="menu-item" data-section="services">
+                    <i class="fas fa-cut"></i>
+                    Services
+                </a>
+                <a href="#statistics" class="menu-item" data-section="statistics">
+                    <i class="fas fa-chart-line"></i>
+                    Statistiques
+                </a>
+                <a href="#settings" class="menu-item" data-section="settings">
+                    <i class="fas fa-cog"></i>
+                    Paramètres
+                </a>
+                <a href="#" class="menu-item" id="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Déconnexion
+                </a>
+            </div>
+        </div>
+        
+        <div class="content">
+            <!-- Section Tableau de bord -->
+            <section id="dashboard" class="content-section active">
+                <div class="header">
+                    <h1 class="page-title">Tableau de bord</h1>
+                    
+                    <div class="user-profile">
+                        <span class="user-name">Admin</span>
+                        <div class="user-avatar">A</div>
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon primary">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="today-appointments">0</div>
+                            <div class="stat-label">Rendez-vous aujourd'hui</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon success">
+                            <i class="fas fa-euro-sign"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="weekly-revenue">0€</div>
+                            <div class="stat-label">Revenus cette semaine</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon warning">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="monthly-clients">0</div>
+                            <div class="stat-label">Nouveaux clients ce mois</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon danger">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="growth-rate">0%</div>
+                            <div class="stat-label">Croissance mensuelle</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Rendez-vous à venir</h2>
+                        <div class="card-actions">
+                            <button class="btn btn-primary" id="add-appointment-btn">
+                                <i class="fas fa-plus"></i> Nouveau
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Client</th>
+                                    <th>Service</th>
+                                    <th>Date & Heure</th>
+                                    <th>Prix</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="upcoming-appointments">
+                                <!-- Rendez-vous seront insérés ici dynamiquement -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="card calendar-card">
+                        <div class="card-header">
+                            <h2 class="card-title">Calendrier des rendez-vous</h2>
+                        </div>
+                        
+                        <div class="calendar">
+                            <div class="calendar-header">
+                                <h3 class="calendar-title" id="calendar-month-year">Avril 2025</h3>
+                                <div class="calendar-navigation">
+                                    <button class="calendar-nav-btn" id="prev-month"><i class="fas fa-chevron-left"></i></button>
+                                    <button class="calendar-nav-btn" id="next-month"><i class="fas fa-chevron-right"></i></button>
+                                </div>
+                            </div>
+                            
+                            <div class="calendar-weekdays">
+                                <div>Lun</div>
+                                <div>Mar</div>
+                                <div>Mer</div>
+                                <div>Jeu</div>
+                                <div>Ven</div>
+                                <div>Sam</div>
+                                <div>Dim</div>
+                            </div>
+                            
+                            <div class="calendar-days" id="calendar-days">
+                                <!-- Les jours du calendrier seront générés dynamiquement -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card services-card">
+                        <div class="card-header">
+                            <h2 class="card-title">Services populaires</h2>
+                        </div>
+                        
+                        <div id="popular-services">
+                            <!-- Services populaires seront insérés ici dynamiquement -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Section Rendez-vous -->
+            <section id="appointments" class="content-section">
+                <div class="header">
+                    <h1 class="page-title">Gestion des Rendez-vous</h1>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Tous les rendez-vous</h2>
+                        <div class="card-actions">
+                            <button class="btn btn-primary" id="add-appointment-btn-2">
+                                <i class="fas fa-plus"></i> Nouveau
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="filters">
+                        <div class="filter-group">
+                            <label>Filtrer par date:</label>
+                            <input type="date" id="filter-date">
+                        </div>
+                        <div class="filter-group">
+                            <label>Filtrer par statut:</label>
+                            <select id="filter-status">
+                                <option value="all">Tous</option>
+                                <option value="confirmed">Confirmés</option>
+                                <option value="pending">En attente</option>
+                                <option value="cancelled">Annulés</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Rechercher:</label>
+                            <input type="text" id="search-input" placeholder="Nom ou téléphone">
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Client</th>
+                                    <th>Service</th>
+                                    <th>Date & Heure</th>
+                                    <th>Prix</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="all-appointments">
+                                <!-- Tous les rendez-vous seront insérés ici dynamiquement -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="pagination" id="appointments-pagination">
+                        <!-- Pagination sera générée dynamiquement -->
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Section Clients -->
+            <section id="clients" class="content-section">
+                <div class="header">
+                    <h1 class="page-title">Gestion des Clients</h1>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Tous les clients</h2>
+                        <div class="card-actions">
+                            <button class="btn btn-primary" id="add-client-btn">
+                                <i class="fas fa-plus"></i> Nouveau
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="filters">
+                        <div class="filter-group">
+                            <label>Rechercher:</label>
+                            <input type="text" id="client-search" placeholder="Nom ou téléphone">
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Téléphone</th>
+                                    <th>Rendez-vous</th>
+                                    <th>Dépenses</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clients-list">
+                                <!-- Clients seront insérés ici dynamiquement -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Section Services -->
+            <section id="services" class="content-section">
+                <div class="header">
+                    <h1 class="page-title">Gestion des Services</h1>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Services Femmes</h2>
+                        <div class="card-actions">
+                            <button class="btn btn-primary" id="add-women-service-btn">
+                                <i class="fas fa-plus"></i> Ajouter
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Court</th>
+                                    <th>Moyen</th>
+                                    <th>Long</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="women-services">
+                                <!-- Services femmes seront insérés ici dynamiquement -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Services Hommes</h2>
+                        <div class="card-actions">
+                            <button class="btn btn-primary" id="add-men-service-btn">
+                                <i class="fas fa-plus"></i> Ajouter
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Prix</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="men-services">
+                                <!-- Services hommes seront insérés ici dynamiquement -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Section Statistiques -->
+            <section id="statistics" class="content-section">
+                <div class="header">
+                    <h1 class="page-title">Statistiques</h1>
+                </div>
+                
+                <div class="stats-filters">
+                    <div class="filter-group">
+                        <label>Période:</label>
+                        <select id="stats-period">
+                            <option value="week">Cette semaine</option>
+                            <option value="month" selected>Ce mois</option>
+                            <option value="year">Cette année</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Revenus</h2>
+                        </div>
+                        <div class="chart-container" id="revenue-chart">
+                            <!-- Graphique de revenus -->
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Services populaires</h2>
+                        </div>
+                        <div class="chart-container" id="services-chart">
+                            <!-- Graphique de services -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Rapport détaillé</h2>
+                        <div class="card-actions">
+                            <button class="btn btn-primary" id="export-report-btn">
+                                <i class="fas fa-download"></i> Exporter
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Catégorie</th>
+                                    <th>Service</th>
+                                    <th>Nombre</th>
+                                    <th>Revenus</th>
+                                </tr>
+                            </thead>
+                            <tbody id="report-data">
+                                <!-- Données du rapport seront insérées ici dynamiquement -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Section Paramètres -->
+            <section id="settings" class="content-section">
+                <div class="header">
+                    <h1 class="page-title">Paramètres</h1>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Informations du salon</h2>
+                    </div>
+                    
+                    <form id="salon-info-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Nom du salon</label>
+                                <input type="text" class="form-input" id="salon-name" value="FcHairsLyon">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Téléphone</label>
+                                <input type="tel" class="form-input" id="salon-phone">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Adresse</label>
+                            <input type="text" class="form-input" id="salon-address">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-textarea" id="salon-description">Votre spécialiste de la coiffure afro à Lyon</textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    </form>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Horaires d'ouverture</h2>
+                    </div>
+                    
+                    <form id="hours-form">
+                        <div class="hours-grid">
+                            <div class="hours-day">
+                                <label>Lundi</label>
+                                <div class="hours-inputs">
+                                    <input type="time" class="form-input" id="monday-open" value="09:00">
+                                    <span>à</span>
+                                    <input type="time" class="form-input" id="monday-close" value="19:00">
+                                </div>
+                            </div>
+                            
+                            <div class="hours-day">
+                                <label>Mardi</label>
+                                <div class="hours-inputs">
+                                    <input type="time" class="form-input" id="tuesday-open" value="09:00">
+                                    <span>à</span>
+                                    <input type="time" class="form-input" id="tuesday-close" value="19:00">
+                                </div>
+                            </div>
+                            
+                            <div class="hours-day">
+                                <label>Mercredi</label>
+                                <div class="hours-inputs">
+                                    <input type="time" class="form-input" id="wednesday-open" value="09:00">
+                                    <span>à</span>
+                                    <input type="time" class="form-input" id="wednesday-close" value="19:00">
+                                </div>
+                            </div>
+                            
+                            <div class="hours-day">
+                                <label>Jeudi</label>
+                                <div class="hours-inputs">
+                                    <input type="time" class="form-input" id="thursday-open" value="09:00">
+                                    <span>à</span>
+                                    <input type="time" class="form-input" id="thursday-close" value="19:00">
+                                </div>
+                            </div>
+                            
+                            <div class="hours-day">
+                                <label>Vendredi</label>
+                                <div class="hours-inputs">
+                                    <input type="time" class="form-input" id="friday-open" value="09:00">
+                                    <span>à</span>
+                                    <input type="time" class="form-input" id="friday-close" value="19:00">
+                                </div>
+                            </div>
+                            
+                            <div class="hours-day">
+                                <label>Samedi</label>
+                                <div class="hours-inputs">
+                                    <input type="time" class="form-input" id="saturday-open" value="10:00">
+                                    <span>à</span>
+                                    <input type="time" class="form-input" id="saturday-close" value="18:00">
+                                </div>
+                            </div>
+                            
+                            <div class="hours-day">
+                                <label>Dimanche</label>
+                                <div class="hours-inputs">
+                                    <select class="form-select" id="sunday-status">
+                                        <option value="closed" selected>Fermé</option>
+                                        <option value="open">Ouvert</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    </form>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Compte administrateur</h2>
+                    </div>
+                    
+                    <form id="admin-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Nom d'utilisateur</label>
+                                <input type="text" class="form-input" id="admin-username" value="admin">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-input" id="admin-email">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Ancien mot de passe</label>
+                                <input type="password" class="form-input" id="admin-old-password">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Nouveau mot de passe</label>
+                                <input type="password" class="form-input" id="admin-new-password">
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </div>
+    
+    <!-- Modal Ajout/Édition de rendez-vous -->
+    <div class="modal" id="appointment-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="appointment-modal-title">Ajouter un rendez-vous</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="appointment-form">
+                    <input type="hidden" id="appointment-id">
+                    
+                    <div class="form-group">
+                        <label class="form-label">Client</label>
+                        <select class="form-select" id="client-select" required>
+                            <option value="" disabled selected>Sélectionner un client</option>
+                            <option value="new">+ Nouveau client</option>
+                        </select>
+                    </div>
+                    
+                    <div id="new-client-fields" style="display: none;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Nom</label>
+                                <input type="text" class="form-input" id="client-name">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Téléphone</label>
+                                <input type="tel" class="form-input" id="client-phone">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Catégorie</label>
+                            <select class="form-select" id="service-category" required>
+                                <option value="" disabled selected>Choisir une catégorie</option>
+                                <option value="femmes">Femmes</option>
+                                <option value="hommes">Hommes</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Service</label>
+                            <select class="form-select" id="service-select" required>
+                                <option value="" disabled selected>Choisir d'abord une catégorie</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Modèle/Longueur</label>
+                            <select class="form-select" id="model-select" required>
+                                <option value="" disabled selected>Choisir d'abord un service</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Prix (€)</label>
+                            <input type="number" class="form-input" id="price-input" readonly>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <input type="checkbox" id="brushing-option">
+                        <label for="brushing-option">Ajouter un brushing (+5€)</label>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Date</label>
+                            <input type="date" class="form-input" id="date-input" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Heure</label>
+                            <input type="time" class="form-input" id="time-input" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Statut</label>
+                            <select class="form-select" id="status-select" required>
+                                <option value="pending">En attente</option>
+                                <option value="confirmed">Confirmé</option>
+                                <option value="cancelled">Annulé</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-textarea" id="notes-input"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="save-appointment-btn">Enregistrer</button>
+                <button class="btn btn-danger" id="cancel-appointment-btn">Annuler</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Ajout/Édition de service -->
+    <div class="modal" id="service-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="service-modal-title">Ajouter un service</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="service-form">
+                    <input type="hidden" id="service-id">
+                    <input type="hidden" id="service-category-hidden">
+                    
+                    <div class="form-group">
+                        <label class="form-label">Nom du service</label>
+                        <input type="text" class="form-input" id="service-name" required>
+                    </div>
+                    
+                    <div id="women-service-prices">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Prix court (€)</label>
+                                <input type="number" class="form-input" id="price-court" min="0">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Prix moyen (€)</label>
+                                <input type="number" class="form-input" id="price-moyen" min="0">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Prix long (€)</label>
+                                <input type="number" class="form-input" id="price-long" min="0">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="men-service-price" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">Prix (€)</label>
+                            <input type="number" class="form-input" id="price-unique" min="0" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Image du service</label>
+                        <input type="file" class="form-input" id="service-image" accept="image/*">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="save-service-btn">Enregistrer</button>
+                <button class="btn btn-danger" id="cancel-service-btn">Annuler</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de confirmation -->
+    <div class="modal" id="confirm-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirmation</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirm-message">Êtes-vous sûr de vouloir effectuer cette action ?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" id="confirm-yes-btn">Oui</button>
+                <button class="btn btn-primary" id="confirm-no-btn">Non</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Détails du rendez-vous -->
+    <div class="modal" id="details-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Détails du rendez-vous</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="details-content">
+                <!-- Contenu des détails inséré dynamiquement -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="details-close-btn">Fermer</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../js/admin.js"></script>
+    <script src="../js/admin-dashboard.js"></script>
+    <script src="../js/admin-login.js"></script>
+    <script src="../js/shared-storage.js"></script>
+    <script src="../js/cleanup-demo-data.js"></script>
+    <script src="js/firebase-sync.js"></script>
+    <script src="js/admin-availability.js"></script>
+
+</body>
+</html>

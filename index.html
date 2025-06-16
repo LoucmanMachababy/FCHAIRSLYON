@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FcHairsLyon - Réservations</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/availability.css">
+    <link rel="stylesheet" href="css/improved-mobile.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+</head>
+<body>
+    <header>
+        <img src="images/logo.png" alt="FcHairsLyon Logo" class="logo">
+        <h1>FcHairsLyon</h1>
+        <p>Votre spécialiste de la coiffure afro à Lyon</p>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="#services" class="active">Services</a></li>
+            <li><a href="#reservation">Réservation</a></li>
+            <li><a href="#about">À propos</a></li>
+            <li><a href="#admin">Admin</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <section id="services">
+            <h2 class="section-title">Nos Prestations</h2>
+            
+            <div class="tabs">
+                <button class="tab-button active" data-tab="femmes">Femmes</button>
+                <button class="tab-button" data-tab="hommes">Hommes</button>
+            </div>
+            
+            <div id="femmes" class="tab-content active">
+                <div class="services-grid" id="femmes-services"></div>
+            </div>
+            
+            <div id="hommes" class="tab-content">
+                <div class="services-grid" id="hommes-services"></div>
+            </div>
+        </section>
+        
+        <section id="reservation" class="reservation-section">
+            <h2 class="section-title">Réserver une Prestation</h2>
+            
+            <div id="alert-success" class="alert alert-success">
+                Votre réservation a été confirmée !
+            </div>
+            
+            <div id="alert-error" class="alert alert-error">
+                Une erreur s'est produite. Veuillez réessayer.
+            </div>
+            
+            <form id="reservation-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="service-select" class="form-label">Service</label>
+                        <select id="service-select" class="form-select" required>
+                            <option value="" disabled selected>Choisissez un service</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="model-select" class="form-label">Longueur / Modèle</label>
+                        <select id="model-select" class="form-select" required>
+                            <option value="" disabled selected>Choisissez d'abord un service</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name-input" class="form-label">Nom complet</label>
+                        <input type="text" id="name-input" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone-input" class="form-label">Numéro de téléphone</label>
+                        <input type="tel" id="phone-input" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email-input" class="form-label">Email</label>
+                        <input type="email" id="email-input" class="form-input" required>
+                    </div>
+                    
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="date-input" class="form-label">Date</label>
+                        <input type="date" id="date-input" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="time-input" class="form-label">Heure</label>
+                        <input type="time" id="time-input" class="form-input" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="notes-input" class="form-label">Notes supplémentaires (optionnel)</label>
+                    <textarea id="notes-input" class="form-input" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <input type="checkbox" id="brushing-option">
+                    <label for="brushing-option">Ajouter un brushing (+5€)</label>
+                </div>
+                
+                <button type="submit" class="form-button">Confirmer la réservation</button>
+            </form>
+        </section>
+        
+        <section id="reservations" class="reservation-section">
+            <h2 class="section-title">Réservations en cours</h2>
+            <div id="reservations-list" class="reservations-list"></div>
+        </section>
+        
+        <!-- Nouvelle section À propos -->
+        <section id="about" class="about-section">
+            <h2 class="section-title">À propos de FcHairsLyon</h2>
+            
+            <div class="about-content">
+                <div class="about-image">
+                    <img src="images/fchaireslyon.jpeg" alt="Notre salon de coiffure">
+                </div>
+                <div class="about-text">
+                    <h3>Votre spécialiste de la coiffure afro à Lyon</h3>
+                    <p>Bienvenue chez FcHairsLyon, votre destination privilégiée pour toutes vos coiffures afro à Lyon. Fondé avec passion et expertise, notre salon s'engage à offrir des services de qualité supérieure pour tous types de cheveux afro.</p>
+                    <p>Nos coiffures sont spécialisées dans une variété de styles, des braids traditionnelles aux styles plus modernes comme les faux locs et les vanilles.</p>
+                    <p>Nous utilisons uniquement des produits de haute qualité pour protéger et nourrir vos cheveux, assurant des résultats durables et un look impeccable.</p>
+                    
+                    <h3>Nos valeurs</h3>
+                    <p>Chez FcHairsLyon, nous croyons en :</p>
+                    <ul>
+                        <li>L'excellence et la qualité dans chaque coiffure</li>
+                        <li>Le respect des cheveux naturels et leur santé</li>
+                        <li>Un service personnalisé adapté à chaque client</li>
+                        <li>Une atmosphère chaleureuse et accueillante</li>
+                    </ul>
+                    
+                </div>
+            </div>
+        </section>
+        
+        <!-- Nouvelle section Admin -->
+        <section id="admin" class="admin-section">
+            <h2 class="section-title">Accès Administrateur</h2>
+            
+            <div class="admin-login">
+                <p>Cette section est réservée à l'administration de FcHairsLyon.</p>
+                <form id="admin-login-form" class="login-form">
+                    <div class="form-group">
+                        <label for="username" class="form-label">Nom d'utilisateur</label>
+                        <input type="text" id="username" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password" class="form-label">Mot de passe</label>
+                        <input type="password" id="password" class="form-input" required>
+                    </div>
+                    
+                    <div id="login-error" class="alert alert-error" style="display: none;">
+                        Identifiants incorrects. Veuillez réessayer.
+                    </div>
+                    
+                    <button type="submit" class="form-button">Se connecter</button>
+                </form>
+            </div>
+        </section>
+    </div>
+    
+    <footer>
+        <div class="footer-content">
+            <img src="images/logo.png" alt="FcHairsLyon Logo" class="footer-logo">
+            
+            <div class="social-links">
+                <a href="https://www.instagram.com/fchairslyon/" class="social-link"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.tiktok.com/@fchairslyon?lang=fr" class="social-link"><i class="fab fa-tiktok"></i></a>
+            </div>
+            
+            <p>FcHairsLyon © 2025 - Tous droits réservés</p>
+            
+            <div class="footer-links">
+                <a href="#">Mentions légales</a>
+                <a href="#">Politique de confidentialité</a>
+                <a href="#">Contact</a>
+            </div>
+        </div>
+    </footer>
+    
+    <div id="confirmation-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirmation de réservation</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div id="confirmation-content"></div>
+            <button id="confirm-reservation" class="form-button">Confirmer</button>
+        </div>
+    </div>
+    
+    <script src="js/script.js"></script>
+    <script src="js/reservations.js"></script>
+    <script src="js/admin-login.js"></script>
+    <script src="js/email-notifications.js"></script>
+    <script src="js/client-availability.js"></script>
+    <script src="js/shared-storage.js"></script>
+    <script src="js/availability-fix.js"></script>
+    <script src="js/cloud-storage-service.js"></script>
+    <script src="js/mobile-enhancements.js"></script>
+    <script src="js/firebase-sync.js"></script>
+    <script src="js/display-availability.js"></script>
+    
+</body>
+</html>
