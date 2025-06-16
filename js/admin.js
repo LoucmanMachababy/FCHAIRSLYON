@@ -1832,16 +1832,34 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', init);
 
 // ======== FONCTION DE RESET ADMIN (améliorée) ========
-function resetAdminDataAndRefresh() {
+async function resetAdminDataAndRefresh() {
     console.log('Début de la réinitialisation...');
     
-    // Suppression directe des données
-    localStorage.clear(); // Supprime tout le localStorage
-    console.log('localStorage vidé');
-    
-    // Forcer le rechargement de la page
-    alert('Toutes les données ont été supprimées. La page va se recharger.');
-    window.location.reload();
+    try {
+        // Suppression dans localStorage
+        localStorage.clear();
+        console.log('localStorage vidé');
+
+        // Suppression dans Firebase
+        if (window.firebaseSync && window.firebaseSync.deleteAllData) {
+            console.log('Suppression des données Firebase...');
+            await window.firebaseSync.deleteAllData();
+            console.log('Données Firebase supprimées');
+        }
+
+        // Suppression des disponibilités
+        if (window.firebaseSync && window.firebaseSync.deleteAllAvailability) {
+            console.log('Suppression des disponibilités...');
+            await window.firebaseSync.deleteAllAvailability();
+            console.log('Disponibilités supprimées');
+        }
+
+        alert('Toutes les données ont été supprimées. La page va se recharger.');
+        window.location.reload();
+    } catch (error) {
+        console.error('Erreur lors de la réinitialisation:', error);
+        alert('Erreur lors de la suppression des données. Veuillez réessayer.');
+    }
 }
 
 function addResetButtonToSection(sectionId, btnId) {
@@ -1858,9 +1876,12 @@ function addResetButtonToSection(sectionId, btnId) {
         resetBtn.className = 'btn btn-danger';
         resetBtn.innerHTML = '<i class="fas fa-trash"></i> Tout réinitialiser';
         resetBtn.style.marginLeft = '20px';
-        resetBtn.onclick = function() {
+        resetBtn.onclick = function(e) {
+            e.preventDefault();
             console.log('Bouton reset cliqué');
-            resetAdminDataAndRefresh();
+            if (confirm('Êtes-vous sûr de vouloir supprimer TOUTES les données ? Cette action est irréversible.')) {
+                resetAdminDataAndRefresh();
+            }
         };
         section.appendChild(resetBtn);
         console.log('Bouton reset ajouté');

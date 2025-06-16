@@ -527,3 +527,51 @@ const firebaseConfig = {
       console.error("[FirebaseInit] Erreur lors de l'initialisation Firebase:", error);
     }
   });
+
+// Fonction pour supprimer toutes les données
+async function deleteAllData() {
+    try {
+        console.log('[FirebaseSync] Suppression de toutes les données...');
+        const db = firebase.firestore();
+        
+        // Supprimer tous les documents de la collection clients
+        const clientsSnapshot = await db.collection('clients').get();
+        const deletePromises = clientsSnapshot.docs.map(doc => doc.ref.delete());
+        await Promise.all(deletePromises);
+        
+        // Supprimer tous les documents de la collection reservations
+        const reservationsSnapshot = await db.collection('reservations').get();
+        const deleteReservationsPromises = reservationsSnapshot.docs.map(doc => doc.ref.delete());
+        await Promise.all(deleteReservationsPromises);
+        
+        console.log('[FirebaseSync] Toutes les données ont été supprimées');
+        return true;
+    } catch (error) {
+        console.error('[FirebaseSync] Erreur lors de la suppression des données:', error);
+        throw error;
+    }
+}
+
+// Fonction pour supprimer toutes les disponibilités
+async function deleteAllAvailability() {
+    try {
+        console.log('[FirebaseSync] Suppression de toutes les disponibilités...');
+        const db = firebase.firestore();
+        
+        // Supprimer le document de disponibilités
+        await db.collection('availability').doc('main').delete();
+        
+        console.log('[FirebaseSync] Toutes les disponibilités ont été supprimées');
+        return true;
+    } catch (error) {
+        console.error('[FirebaseSync] Erreur lors de la suppression des disponibilités:', error);
+        throw error;
+    }
+}
+
+// Exporter les fonctions
+window.firebaseSync = {
+    // ... existing exports ...
+    deleteAllData,
+    deleteAllAvailability
+};
