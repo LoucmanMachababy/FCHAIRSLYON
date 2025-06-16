@@ -1856,24 +1856,43 @@ if (!document.getElementById('reset-admin-btn')) {
     });
 }
 
-// === THEME SWITCH (sombre/clair) ===
+// === THEME SWITCH (sombre/clair) amélioré ===
 function applyTheme() {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const savedTheme = localStorage.getItem('theme');
+    document.body.classList.add('theme-transition');
     if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
         document.body.classList.add('dark-mode');
     } else {
         document.body.classList.remove('dark-mode');
     }
+    setTimeout(() => document.body.classList.remove('theme-transition'), 800);
 }
 
-function toggleTheme() {
+function toggleTheme(e) {
+    document.body.classList.add('theme-transition');
+    document.body.classList.add('flash-effect');
+    setTimeout(() => document.body.classList.remove('flash-effect'), 500);
+    const btn = document.getElementById('theme-switch');
+    btn.classList.toggle('active');
     if (document.body.classList.contains('dark-mode')) {
         document.body.classList.remove('dark-mode');
         localStorage.setItem('theme', 'light');
     } else {
         document.body.classList.add('dark-mode');
         localStorage.setItem('theme', 'dark');
+    }
+    updateThemeSwitchIcon();
+    setTimeout(() => document.body.classList.remove('theme-transition'), 800);
+    // Ripple effect
+    if (e) {
+        const ripple = document.createElement('span');
+        ripple.className = 'ripple';
+        const rect = btn.getBoundingClientRect();
+        ripple.style.left = (e.clientX - rect.left) + 'px';
+        ripple.style.top = (e.clientY - rect.top) + 'px';
+        btn.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
     }
 }
 
@@ -1883,9 +1902,8 @@ function addThemeSwitch() {
     btn.id = 'theme-switch';
     btn.className = 'theme-switch';
     btn.innerHTML = '<span class="icon">🌙</span> <span class="label">Sombre</span>';
-    btn.onclick = function() {
-        toggleTheme();
-        updateThemeSwitchIcon();
+    btn.onclick = function(e) {
+        toggleTheme(e);
     };
     document.body.appendChild(btn);
     updateThemeSwitchIcon();
@@ -1906,9 +1924,13 @@ applyTheme();
 addThemeSwitch();
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
 
-// Animation d'apparition sur les sections principales
+// Animation d'apparition sur les sections principales (plus marqué)
 window.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.section-title, .card, .modal-content, .reservation-item, .stat-card').forEach(el => {
+    document.querySelectorAll('.section-title, .card, .modal-content, .reservation-item, .stat-card').forEach((el, i) => {
+        el.style.animationDelay = (0.1 + i * 0.07) + 's';
         el.classList.add('fade-in');
     });
+    // Animation du logo
+    const logo = document.querySelector('.logo');
+    if (logo) logo.classList.add('logo-animate');
 });

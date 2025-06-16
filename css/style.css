@@ -988,4 +988,110 @@ select:disabled {
         transform: scale(40, 40);
     }
 }
+
+/* === Transition animée du body lors du changement de thème === */
+body.theme-transition {
+  transition: background 0.7s cubic-bezier(.4,0,.2,1), color 0.7s cubic-bezier(.4,0,.2,1), filter 0.7s cubic-bezier(.4,0,.2,1);
+}
+
+body.flash-effect {
+  animation: flashBody 0.5s;
+}
+@keyframes flashBody {
+  0% { filter: brightness(2) blur(2px); }
+  100% { filter: none; }
+}
+
+/* === Apparition des cartes avec slide+scale+fade === */
+.card, .modal-content, .stat-card, .reservation-item {
+  opacity: 0;
+  transform: translateY(40px) scale(0.98);
+  animation: slideFadeScaleIn 0.8s cubic-bezier(.4,0,.2,1) both;
+  animation-delay: 0.2s;
+}
+@keyframes slideFadeScaleIn {
+  from { opacity: 0; transform: translateY(40px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+/* === Effet de halo/glow sur les boutons au hover === */
+.btn, .action-btn, .theme-switch {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+.btn:hover, .action-btn:hover, .theme-switch:hover {
+  box-shadow: 0 0 16px 4px var(--accent), 0 2px 12px rgba(0,0,0,0.12);
+  filter: brightness(1.08) drop-shadow(0 0 8px var(--accent));
+}
+
+/* === Ripple effect sur les boutons === */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+  background: rgba(255, 176, 217, 0.4);
+  pointer-events: none;
+  z-index: 2;
+}
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* === Animation du logo au chargement === */
+.logo-animate {
+  animation: logoPop 1.2s cubic-bezier(.4,0,.2,1);
+}
+@keyframes logoPop {
+  0% { transform: scale(0.7) rotate(-20deg); opacity: 0; }
+  60% { transform: scale(1.1) rotate(8deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); }
+}
+
+/* === Style du bouton theme-switch amélioré === */
+.theme-switch {
+  font-size: 1.2em;
+  padding: 12px 28px;
+  border-radius: 40px;
+  background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+  box-shadow: 0 4px 24px rgba(255, 176, 217, 0.15), var(--shadow);
+  border: 2px solid var(--accent);
+  transition: background 0.5s, color 0.5s, box-shadow 0.5s, border 0.5s;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  filter: drop-shadow(0 0 8px var(--accent));
+}
+.theme-switch .icon {
+  font-size: 1.6em;
+  transition: transform 0.5s cubic-bezier(.4,0,.2,1);
+  display: inline-block;
+}
+.theme-switch.active .icon {
+  transform: rotate(180deg) scale(1.2);
+}
+
+/* === Fond glassmorphism/neon en dark mode === */
+body.dark-mode {
+  background: linear-gradient(135deg, #181a23 0%, #23243a 100%);
+  background-attachment: fixed;
+}
+body.dark-mode::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 70% 20%, #ffb2d9 0%, transparent 60%),
+              radial-gradient(circle at 20% 80%, #ffd700 0%, transparent 70%);
+  opacity: 0.18;
+}
+
+/* === Glow sur les titres === */
+.section-title, .page-title {
+  text-shadow: 0 2px 12px var(--accent), 0 1px 2px rgba(0,0,0,0.08);
+}
 }
