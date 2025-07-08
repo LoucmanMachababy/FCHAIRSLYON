@@ -40,7 +40,8 @@ function sendConfirmationEmail(reservation) {
         reservation_date: formattedDate,
         reservation_time: formattedTime,
         total_price: reservation.totalPrice + '€',
-        brushing: reservation.brushing ? 'Oui' : 'Non'
+        brushing: reservation.brushing ? 'Oui' : 'Non',
+        instagram: reservation.instagram || ''
     };
     
     // Envoyer l'email
@@ -106,7 +107,7 @@ const services = {
             "image": "images/fulanihomme.png" 
         },
         "Barrel Twist": { 
-            "unique": 25, 
+            "unique": 30, 
             "image": "images/BARRELMANLOCKSER.jpeg" 
         },
         "Départ de locks": { 
@@ -563,6 +564,7 @@ function initEventListeners() {
         const name = document.getElementById('name-input').value;
         const phone = document.getElementById('phone-input').value;
         const email = document.getElementById('email-input')?.value || ''; // Récupérer l'email
+        const instagram = document.getElementById('instagram-input')?.value || '';
         const date = document.getElementById('date-input').value;
         
         // Récupérer l'heure - vérifier si nous utilisons le select personnalisé
@@ -593,6 +595,7 @@ function initEventListeners() {
             name,
             phone,
             email, // Ajouter l'email à l'objet de réservation
+            instagram, // Ajout du champ Instagram
             dateTime: `${date}T${time}`,
             notes,
             brushing,
