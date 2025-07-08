@@ -361,16 +361,41 @@ function generateReservationId() {
 return 'res_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 }
 
-// Fonction pour envoyer une notification par email (simulée)
+// Fonction pour envoyer une notification par email (réelle via EmailJS)
 function sendNotificationEmail(reservation, type) {
-console.log(`Notification email (${type}) would be sent to: ${reservation.name} (${reservation.phone})`);
+  // Prépare les variables communes
+  const formattedDate = formatDateFR(reservation.dateTime);
+  const formattedTime = formatTimeFR(reservation.dateTime);
+  const brushing = reservation.brushing ? 'Oui' : 'Non';
 
-// Dans une application réelle, cette fonction enverrait un email via une API
-// Pour l'instant, elle ne fait rien de plus que journaliser l'action
+  // 1. Email admin
+  emailjs.send('service_pb6i83k', 'template_9o6on07', {
+    name: reservation.name,
+    email: reservation.email,
+    phone: reservation.phone,
+    service_name: reservation.service,
+    service_model: reservation.model,
+    reservation_date: formattedDate,
+    reservation_time: formattedTime,
+    total_price: reservation.totalPrice,
+    brushing: brushing,
+    notes: reservation.notes || ''
+  });
 
-// Types: 'confirmation', 'reminder', 'cancellation', 'modification'
+  // 2. Email client
+  emailjs.send('service_pb6i83k', 'template_zt7aabh', {
+    email: reservation.email,
+    name: reservation.name,
+    service_name: reservation.service,
+    service_model: reservation.model,
+    reservation_date: formattedDate,
+    reservation_time: formattedTime,
+    total_price: reservation.totalPrice,
+    brushing: brushing,
+    notes: reservation.notes || ''
+  });
 
-return true; // Succès (simulé)
+  return true;
 }
 
 // Fonction pour envoyer un SMS de confirmation (simulée)

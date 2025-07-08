@@ -242,7 +242,9 @@ function updateAvailableTimeSlots(dateString) {
         const formattedHour = `${parseInt(h)}h${m === '00' ? '' : m}`;
         
         option.textContent = formattedHour;
+        option.classList.add('slot-appear');
         timeSelect.appendChild(option);
+        setTimeout(() => option.classList.add('slot-appear-active'), 10);
     });
     
     // Afficher un message positif

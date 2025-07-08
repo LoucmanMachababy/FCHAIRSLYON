@@ -350,6 +350,11 @@ function saveAppointment() {
     if (id) {
         // Mettre à jour une réservation existante
         reservations[id] = reservation;
+        // Notifier admin et client de la modification
+        if (window.emailNotificationService && reservation.email) {
+            window.emailNotificationService.sendEmail(reservation.email, 'reservation_confirmation', reservation);
+            window.emailNotificationService.sendAdminNotification('reservation_modifiee', reservation);
+        }
     } else {
         // Ajouter une nouvelle réservation
         reservations.push(reservation);
@@ -374,15 +379,27 @@ function deleteAppointment(id) {
         'Êtes-vous sûr de vouloir supprimer ce rendez-vous ?',
         () => {
             let reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+            const reservation = reservations[id];
+            // Préparer les données pour l'email
+            const reservationData = reservation ? {
+                name: reservation.name,
+                service: reservation.service,
+                model: reservation.model,
+                dateTime: reservation.dateTime,
+                totalPrice: reservation.totalPrice,
+                email: reservation.email
+            } : null;
             reservations.splice(id, 1);
             localStorage.setItem('reservations', JSON.stringify(reservations));
-            
             displayAllAppointments();
             displayDashboard(); // Mettre à jour le tableau de bord
-            
             // Fermer la modal
             confirmModal.style.display = 'none';
-            
+            // Notifier admin et client
+            if (window.emailNotificationService && reservationData && reservationData.email) {
+                window.emailNotificationService.sendEmail(reservationData.email, 'reservation_cancellation', reservationData);
+                window.emailNotificationService.sendAdminNotification('reservation_annulee', reservationData);
+            }
             // Afficher un message
             alert('Rendez-vous supprimé avec succès !');
         }
@@ -1125,23 +1142,31 @@ function exportReport() {
 
 function initSettingsSection() {
     // Écouteurs pour les formulaires
-    document.getElementById('salon-info-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        saveSalonInfo();
-    });
-    
-    document.getElementById('hours-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        saveOpeningHours();
-    });
-    
-    document.getElementById('admin-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        saveAdminAccount();
-    });
-    
+    var salonForm = document.getElementById('salon-info-form');
+    if (salonForm) {
+        salonForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveSalonInfo();
+        });
+    }
+    var hoursForm = document.getElementById('hours-form');
+    if (hoursForm) {
+        hoursForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveOpeningHours();
+        });
+    }
+    var adminForm = document.getElementById('admin-form');
+    if (adminForm) {
+        adminForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveAdminAccount();
+        });
+    }
     // Charger les données existantes
-    loadSettings();
+    if (salonForm || hoursForm || adminForm) {
+        loadSettings();
+    }
 }
 
 function saveSalonInfo() {
@@ -1891,72 +1916,14 @@ function addResetButtonToSection(sectionId, btnId) {
 }
 
 // === THEME SWITCH (sombre/clair) amélioré ===
-function applyTheme() {
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const savedTheme = localStorage.getItem('theme');
-    document.body.classList.add('theme-transition');
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-        document.body.classList.add('dark-mode');
-    } else {
-        document.body.classList.remove('dark-mode');
-    }
-    setTimeout(() => document.body.classList.remove('theme-transition'), 800);
-}
-
-function toggleTheme(e) {
-    document.body.classList.add('theme-transition');
-    document.body.classList.add('flash-effect');
-    setTimeout(() => document.body.classList.remove('flash-effect'), 500);
-    const btn = document.getElementById('theme-switch');
-    btn.classList.toggle('active');
-    if (document.body.classList.contains('dark-mode')) {
-        document.body.classList.remove('dark-mode');
-        localStorage.setItem('theme', 'light');
-    } else {
-        document.body.classList.add('dark-mode');
-        localStorage.setItem('theme', 'dark');
-    }
-    updateThemeSwitchIcon();
-    setTimeout(() => document.body.classList.remove('theme-transition'), 800);
-    // Ripple effect
-    if (e) {
-        const ripple = document.createElement('span');
-        ripple.className = 'ripple';
-        const rect = btn.getBoundingClientRect();
-        ripple.style.left = (e.clientX - rect.left) + 'px';
-        ripple.style.top = (e.clientY - rect.top) + 'px';
-        btn.appendChild(ripple);
-        setTimeout(() => ripple.remove(), 600);
-    }
-}
-
-function addThemeSwitch() {
-    if (document.getElementById('theme-switch')) return;
-    const btn = document.createElement('button');
-    btn.id = 'theme-switch';
-    btn.className = 'theme-switch';
-    btn.innerHTML = '<span class="icon">🌙</span> <span class="label">Sombre</span>';
-    btn.onclick = function(e) {
-        toggleTheme(e);
-    };
-    document.body.appendChild(btn);
-    updateThemeSwitchIcon();
-}
-
-function updateThemeSwitchIcon() {
-    const btn = document.getElementById('theme-switch');
-    if (!btn) return;
-    if (document.body.classList.contains('dark-mode')) {
-        btn.innerHTML = '<span class="icon">☀️</span> <span class="label">Clair</span>';
-    } else {
-        btn.innerHTML = '<span class="icon">🌙</span> <span class="label">Sombre</span>';
-    }
-}
-
-// Appliquer le thème au chargement
-applyTheme();
-addThemeSwitch();
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+// SUPPRIMÉ :
+// - function applyTheme()
+// - function toggleTheme(e)
+// - function addThemeSwitch()
+// - function updateThemeSwitchIcon()
+// - Tous les appels à applyTheme(), addThemeSwitch(), updateThemeSwitchIcon(), toggleTheme()
+// - Toute manipulation de document.body.classList avec 'dark-mode', 'theme-transition', 'flash-effect'
+// - window.matchMedia('(prefers-color-scheme: dark)').addEventListener(...)
 
 // Animation d'apparition sur les sections principales (plus marqué)
 window.addEventListener('DOMContentLoaded', function() {

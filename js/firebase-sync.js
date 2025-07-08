@@ -1,8 +1,28 @@
 // firebase-sync.js
 // Solution de synchronisation directe utilisant Firebase
 
-// Configuration Firebase - GRATUIT pour le niveau de trafic d'un salon de coiffure
-const firebaseConfig = {
+// === CONFIGURATION FIREBASE SÉCURISÉE ===
+// La configuration Firebase doit être placée dans un fichier séparé non versionné : 'js/firebase-config.js'
+// Exemple de contenu pour js/firebase-config.js :
+//   window.FCHAIRSLYON_FIREBASE_CONFIG = {
+//     apiKey: "VOTRE_API_KEY",
+//     authDomain: "VOTRE_PROJET.firebaseapp.com",
+//     projectId: "VOTRE_PROJET",
+//     storageBucket: "VOTRE_PROJET.appspot.com",
+//     messagingSenderId: "...",
+//     appId: "...",
+//     measurementId: "..."
+//   };
+//
+// NE PAS VERSIONNER CE FICHIER ! (ajoutez-le à .gitignore)
+
+let firebaseConfig = undefined;
+if (window.FCHAIRSLYON_FIREBASE_CONFIG) {
+  firebaseConfig = window.FCHAIRSLYON_FIREBASE_CONFIG;
+} else {
+  console.error("[FirebaseSync] ERREUR : Le fichier js/firebase-config.js est manquant ou mal configuré. Veuillez suivre l'exemple dans firebase-sync.js pour brancher votre vraie config Firebase.");
+  // Valeur par défaut (ancienne config, à remplacer !)
+  firebaseConfig = {
   apiKey: "AIzaSyB1icTuyitHvwLOhOs2BrAd_qC4-kKdd_w",
   authDomain: "fchairslyon-app.firebaseapp.com",
   projectId: "fchairslyon-app",
@@ -11,6 +31,7 @@ const firebaseConfig = {
   appId: "1:969792201439:web:bddbf810ebf48c5641ff6a",
   measurementId: "G-3ZCHZ4EGJH"
 };
+}
 
   
   // Classe de synchronisation Firebase

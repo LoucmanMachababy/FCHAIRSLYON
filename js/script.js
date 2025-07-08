@@ -1,8 +1,20 @@
 // Initialiser EmailJS
 function initEmailJS() {
     (function() {
-        // Remplacez par votre clé publique EmailJS (celle que vous trouvez dans Account > API Keys)
-        emailjs.init("votre_cle_publique_ici");
+        // === CONFIGURATION EMAILJS SÉCURISÉE ===
+        // Placez votre clé publique dans un fichier séparé non versionné : 'js/emailjs-config.js'
+        // Exemple de contenu pour js/emailjs-config.js :
+        //   window.FCHAIRSLYON_EMAILJS_KEY = "VOTRE_CLE_PUBLIQUE_EMAILJS";
+        // NE PAS VERSIONNER CE FICHIER ! (ajoutez-le à .gitignore)
+        let emailjsKey = undefined;
+        if (window.FCHAIRSLYON_EMAILJS_KEY) {
+            emailjsKey = window.FCHAIRSLYON_EMAILJS_KEY;
+        } else {
+            console.error("[EmailJS] ERREUR : Le fichier js/emailjs-config.js est manquant ou mal configuré. Veuillez suivre l'exemple dans script.js pour brancher votre vraie clé EmailJS.");
+            // Valeur de secours (ancienne clé, à remplacer !)
+            emailjsKey = "FNaCkd48052cJ6ssL";
+        }
+        emailjs.init(emailjsKey);
     })();
 }
 
@@ -440,16 +452,36 @@ function deleteReservation(index) {
         const now = new Date();
         const hoursDiff = (reservationTime - now) / (1000 * 60 * 60);
         
+        // Préparer les données pour l'email
+        const reservationData = {
+            name: reservation.name,
+            service: reservation.service,
+            model: reservation.model,
+            dateTime: reservation.dateTime,
+            totalPrice: reservation.totalPrice,
+            email: reservation.email
+        };
+        
         if (hoursDiff < 24) {
             // Au lieu de bloquer, on marque simplement comme annulée
             reservations[realIndex].status = 'cancelled';
             localStorage.setItem('reservations', JSON.stringify(reservations));
             showAlert('success', 'Réservation annulée. Notez qu\'une annulation moins de 24h avant peut entraîner des frais.');
+            // Notifier admin et client
+            if (window.emailNotificationService && reservation.email) {
+                window.emailNotificationService.sendEmail(reservation.email, 'reservation_cancellation', reservationData);
+                window.emailNotificationService.sendAdminNotification('reservation_annulee', reservationData);
+            }
         } else {
             // Supprimer la réservation
             reservations.splice(realIndex, 1);
             localStorage.setItem('reservations', JSON.stringify(reservations));
             showAlert('success', 'Réservation annulée avec succès.');
+            // Notifier admin et client
+            if (window.emailNotificationService && reservation.email) {
+                window.emailNotificationService.sendEmail(reservation.email, 'reservation_cancellation', reservationData);
+                window.emailNotificationService.sendAdminNotification('reservation_annulee', reservationData);
+            }
         }
         
         displayReservations();
@@ -631,74 +663,6 @@ function initEventListeners() {
     document.getElementById('date-input').value = today;
 }
 
-// === THEME SWITCH (sombre/clair) pour la page réservation ===
-function applyTheme() {
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const savedTheme = localStorage.getItem('theme');
-    document.body.classList.add('theme-transition');
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-        document.body.classList.add('dark-mode');
-    } else {
-        document.body.classList.remove('dark-mode');
-    }
-    setTimeout(() => document.body.classList.remove('theme-transition'), 800);
-}
-
-function toggleTheme(e) {
-    document.body.classList.add('theme-transition');
-    document.body.classList.add('flash-effect');
-    setTimeout(() => document.body.classList.remove('flash-effect'), 500);
-    const btn = document.getElementById('theme-switch');
-    btn.classList.toggle('active');
-    if (document.body.classList.contains('dark-mode')) {
-        document.body.classList.remove('dark-mode');
-        localStorage.setItem('theme', 'light');
-    } else {
-        document.body.classList.add('dark-mode');
-        localStorage.setItem('theme', 'dark');
-    }
-    updateThemeSwitchIcon();
-    setTimeout(() => document.body.classList.remove('theme-transition'), 800);
-    // Ripple effect
-    if (e) {
-        const ripple = document.createElement('span');
-        ripple.className = 'ripple';
-        const rect = btn.getBoundingClientRect();
-        ripple.style.left = (e.clientX - rect.left) + 'px';
-        ripple.style.top = (e.clientY - rect.top) + 'px';
-        btn.appendChild(ripple);
-        setTimeout(() => ripple.remove(), 600);
-    }
-}
-
-function addThemeSwitch() {
-    if (document.getElementById('theme-switch')) return;
-    const btn = document.createElement('button');
-    btn.id = 'theme-switch';
-    btn.className = 'theme-switch';
-    btn.innerHTML = '<span class="icon">🌙</span> <span class="label">Sombre</span>';
-    btn.onclick = function(e) {
-        toggleTheme(e);
-    };
-    document.body.appendChild(btn);
-    updateThemeSwitchIcon();
-}
-
-function updateThemeSwitchIcon() {
-    const btn = document.getElementById('theme-switch');
-    if (!btn) return;
-    if (document.body.classList.contains('dark-mode')) {
-        btn.innerHTML = '<span class="icon">☀️</span> <span class="label">Clair</span>';
-    } else {
-        btn.innerHTML = '<span class="icon">🌙</span> <span class="label">Sombre</span>';
-    }
-}
-
-// Appliquer le thème au chargement
-applyTheme();
-addThemeSwitch();
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
-
 // Animation d'apparition sur les sections principales (formulaire, alertes, cartes, etc.)
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.section-title, .card, .modal-content, .reservation-item, .stat-card, .reservation-section, .alert').forEach((el, i) => {
@@ -709,14 +673,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const logo = document.querySelector('.footer-logo, .logo');
     if (logo) logo.classList.add('logo-animate');
 });
-
-// Initialiser EmailJS - AJOUTER CETTE FONCTION
-function initEmailJS() {
-    (function() {
-        // Remplacez par votre clé publique EmailJS
-        emailjs.init("FNaCkd48052cJ6ssL");
-    })();
-}
 
 // Fonction d'initialisation - DÉPLACER EN DEHORS de initEventListeners
 function init() {
@@ -755,3 +711,109 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 // Lancer l'application au chargement de la page - DÉPLACER EN DEHORS de initEventListeners
 document.addEventListener('DOMContentLoaded', init);
+
+// === DINGUERIE COIFFURE ===
+(function() {
+  // Carrousel Masonry
+  const masonry = document.querySelector('.coiffure-carousel-masonry');
+  const leftBtn = document.querySelector('.carousel-arrow.left');
+  const rightBtn = document.querySelector('.carousel-arrow.right');
+  if (masonry && leftBtn && rightBtn) {
+    leftBtn.addEventListener('click', () => {
+      masonry.scrollBy({ left: -350, behavior: 'smooth' });
+    });
+    rightBtn.addEventListener('click', () => {
+      masonry.scrollBy({ left: 350, behavior: 'smooth' });
+    });
+    // Swipe sur mobile
+    let startX = null;
+    masonry.addEventListener('touchstart', e => { startX = e.touches[0].clientX; });
+    masonry.addEventListener('touchend', e => {
+      if (startX !== null) {
+        let dx = e.changedTouches[0].clientX - startX;
+        if (dx > 60) leftBtn.click();
+        if (dx < -60) rightBtn.click();
+        startX = null;
+      }
+    });
+  }
+  // Flip card (hover/tap)
+  document.querySelectorAll('.coiffure-card').forEach(card => {
+    card.addEventListener('click', function(e) {
+      if (window.innerWidth < 900) {
+        this.classList.toggle('flipped');
+      }
+    });
+    card.addEventListener('mouseleave', function() {
+      if (window.innerWidth < 900) {
+        this.classList.remove('flipped');
+      }
+    });
+  });
+  // Fade/slide apparition
+  function revealOnScroll() {
+    document.querySelectorAll('.fade-slide').forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight - 60) {
+        el.classList.add('visible');
+      }
+    });
+  }
+  window.addEventListener('scroll', revealOnScroll);
+  window.addEventListener('DOMContentLoaded', revealOnScroll);
+  // Zoom plein écran sur la photo
+  function createModal(imgSrc, alt) {
+    const modal = document.createElement('div');
+    modal.className = 'coiffure-modal';
+    modal.innerHTML = `<div class="modal-bg"></div><img src="${imgSrc}" alt="${alt}"><button class="modal-close" aria-label="Fermer">&times;</button>`;
+    document.body.appendChild(modal);
+    modal.querySelector('.modal-bg').onclick = modal.querySelector('.modal-close').onclick = () => modal.remove();
+    setTimeout(() => modal.classList.add('show'), 10);
+  }
+  document.querySelectorAll('.coiffure-img').forEach(img => {
+    img.style.cursor = 'zoom-in';
+    img.addEventListener('click', function(e) {
+      createModal(this.src, this.alt);
+    });
+  });
+  // Parallax sur la bannière (header)
+  const header = document.querySelector('header');
+  if (header) {
+    window.addEventListener('scroll', function() {
+      let y = window.scrollY;
+      header.style.backgroundPosition = `center ${y * 0.3}px`;
+    });
+  }
+})();
+
+// === MODAL PHOTO GRAND FORMAT ===
+document.addEventListener('DOMContentLoaded', function() {
+  const modal = document.getElementById('photo-modal');
+  const modalImg = document.getElementById('photo-modal-img');
+  const modalClose = document.getElementById('photo-modal-close');
+
+  function openModal(src) {
+    modalImg.src = src;
+    modal.style.display = 'flex';
+  }
+  function closeModal() {
+    modal.style.display = 'none';
+    modalImg.src = '';
+  }
+  // Clic sur les images de prestation/coiffure
+  document.querySelectorAll('.service-image, .coiffure-card img').forEach(img => {
+    img.style.cursor = 'zoom-in';
+    img.addEventListener('click', function(e) {
+      openModal(this.src);
+    });
+  });
+  // Fermer la modal au clic sur la croix ou l'overlay
+  modalClose.addEventListener('click', closeModal);
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal) closeModal();
+  });
+  // Fermer avec Echap
+  document.addEventListener('keydown', function(e) {
+    if (modal.style.display === 'flex' && e.key === 'Escape') closeModal();
+  });
+});

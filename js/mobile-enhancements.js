@@ -150,13 +150,18 @@ function enhanceAdminMobile() {
             document.body.appendChild(menuOverlay);
             
             // Gérer l'ouverture/fermeture du menu
-            menuButton.addEventListener('click', function() {
+            const menuBtn = document.querySelector('.mobile-menu-toggle-admin');
+            const overlay = document.querySelector('.menu-overlay');
+            if (menuBtn && overlay) {
+                menuBtn.style.display = 'flex';
+                overlay.style.display = 'none';
+                menuBtn.addEventListener('click', function() {
                 sidebar.classList.toggle('show-sidebar');
-                menuOverlay.classList.toggle('active');
-                
-                // Changer l'icône
-                const icon = this.querySelector('i');
-                if (icon.classList.contains('fa-bars')) {
+                    overlay.classList.toggle('active');
+                    overlay.style.display = overlay.classList.contains('active') ? 'block' : 'none';
+                    // Change icon
+                    const icon = menuBtn.querySelector('i');
+                    if (sidebar.classList.contains('show-sidebar')) {
                     icon.classList.remove('fa-bars');
                     icon.classList.add('fa-times');
                 } else {
@@ -164,31 +169,27 @@ function enhanceAdminMobile() {
                     icon.classList.remove('fa-times');
                 }
             });
-            
-            // Fermer le menu quand on clique sur l'overlay
-            menuOverlay.addEventListener('click', function() {
-                sidebar.classList.remove('show-sidebar');
-                menuOverlay.classList.remove('active');
-                
-                // Réinitialiser l'icône
-                const icon = menuButton.querySelector('i');
-                icon.classList.add('fa-bars');
-                icon.classList.remove('fa-times');
-            });
-            
-            // Fermer le menu quand on clique sur un élément du menu
-            const menuItems = sidebar.querySelectorAll('.menu-item');
-            menuItems.forEach(item => {
-                item.addEventListener('click', function() {
+                overlay.addEventListener('click', function() {
                     sidebar.classList.remove('show-sidebar');
-                    menuOverlay.classList.remove('active');
-                    
-                    // Réinitialiser l'icône
-                    const icon = menuButton.querySelector('i');
+                    overlay.classList.remove('active');
+                    overlay.style.display = 'none';
+                    // Reset icon
+                    const icon = menuBtn.querySelector('i');
+                    icon.classList.add('fa-bars');
+                    icon.classList.remove('fa-times');
+                });
+                // Fermer le menu quand on clique sur un lien du menu
+                sidebar.querySelectorAll('.menu-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        sidebar.classList.remove('show-sidebar');
+                        overlay.classList.remove('active');
+                        overlay.style.display = 'none';
+                        const icon = menuBtn.querySelector('i');
                     icon.classList.add('fa-bars');
                     icon.classList.remove('fa-times');
                 });
             });
+            }
         }
     }
     
@@ -496,8 +497,6 @@ function setupToastNotifications() {
         
         // Animation d'entrée
         setTimeout(() => toast.classList.add('show'), 10);
-        
-// (Suite du fichier mobile-enhancements.js)
 
         // Animation de sortie
         setTimeout(() => {
