@@ -175,7 +175,7 @@ function createServiceCard(name, details, category) {
     }
     
     card.innerHTML = `
-        <img src="${details.image}" alt="${name}" class="service-image">
+        <img src="${details.image}" alt="${name}" class="service-image" loading="lazy">
         <div class="service-info">
             <h3 class="service-title">${name}</h3>
             <div class="service-price">

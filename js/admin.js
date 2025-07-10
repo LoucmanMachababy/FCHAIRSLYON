@@ -1524,72 +1524,92 @@ function displayPopularServices() {
     });
 }
 
+// === TABLEAU DE BORD DYNAMIQUE ===
 function updateDashboardStats() {
-    const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+  const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+  const clients = JSON.parse(localStorage.getItem('clients')) || [];
+  const now = new Date();
+  const todayStr = now.toISOString().split('T')[0];
+  const weekStart = new Date(now);
+  weekStart.setDate(now.getDate() - now.getDay() + 1); // Lundi
+  const weekStartStr = weekStart.toISOString().split('T')[0];
+  const month = now.getMonth();
+  const year = now.getFullYear();
 
-    // Rendez-vous aujourd'hui
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
+  // Rendez-vous aujourd'hui
+  const todayAppointments = reservations.filter(r => {
+    const d = new Date(r.dateTime);
+    return d.toISOString().split('T')[0] === todayStr && r.status !== 'cancelled';
+  }).length;
+  document.getElementById('today-appointments').textContent = todayAppointments;
 
-    const todayAppointments = reservations.filter(res => {
-        const resDate = new Date(res.dateTime);
-        return resDate >= today && resDate < tomorrow && res.status !== 'cancelled';
-    }).length;
-
-    document.getElementById('today-appointments').textContent = todayAppointments;
-
-    // Revenus cette semaine
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - today.getDay() + 1); // Lundi
-
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 7); // Dimanche prochain
-
-    const weeklyRevenue = reservations.filter(res => {
-        const resDate = new Date(res.dateTime);
-        return resDate >= startOfWeek && resDate < endOfWeek && res.status !== 'cancelled';
-    }).reduce((sum, res) => sum + res.totalPrice, 0);
-
-    document.getElementById('weekly-revenue').textContent = weeklyRevenue + '€';
-
-    // Nouveaux clients ce mois
-    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-
-    const phoneNumbersSet = new Set();
-    const monthlyClientsCount = reservations.filter(res => {
-        const resDate = new Date(res.dateTime);
-        if (resDate >= startOfMonth && resDate <= endOfMonth) {
-            phoneNumbersSet.add(res.phone);
-            return true;
-        }
-        return false;
-    }).length;
-
-    document.getElementById('monthly-clients').textContent = phoneNumbersSet.size;
-
-    // Croissance mensuelle (comparaison avec le mois précédent)
-    const startOfPrevMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-    const endOfPrevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
-
-    const prevMonthRevenue = reservations.filter(res => {
-        const resDate = new Date(res.dateTime);
-        return resDate >= startOfPrevMonth && resDate <= endOfPrevMonth && res.status !== 'cancelled';
-    }).reduce((sum, res) => sum + res.totalPrice, 0);
-
-    const currentMonthRevenue = reservations.filter(res => {
-        const resDate = new Date(res.dateTime);
-        return resDate >= startOfMonth && resDate <= endOfMonth && res.status !== 'cancelled';
-    }).reduce((sum, res) => sum + res.totalPrice, 0);
-
-    let growthRate = 0;
-    if (prevMonthRevenue > 0) {
-        growthRate = ((currentMonthRevenue - prevMonthRevenue) / prevMonthRevenue) * 100;
+  // Revenus cette semaine
+  let weeklyRevenue = 0;
+  reservations.forEach(r => {
+    const d = new Date(r.dateTime);
+    const dStr = d.toISOString().split('T')[0];
+    if (dStr >= weekStartStr && dStr <= todayStr && r.status === 'confirmed') {
+      weeklyRevenue += Number(r.totalPrice || 0);
     }
+  });
+  document.getElementById('weekly-revenue').textContent = weeklyRevenue + '€';
 
-    document.getElementById('growth-rate').textContent = growthRate.toFixed(0) + '%';
+  // Nouveaux clients ce mois
+  const monthlyClients = clients.filter(c => {
+    const d = new Date(c.createdAt || c.firstReservationDate || now);
+    return d.getMonth() === month && d.getFullYear() === year;
+  }).length;
+  document.getElementById('monthly-clients').textContent = monthlyClients;
+
+  // Croissance mensuelle (nb de réservations ce mois vs mois précédent)
+  const thisMonth = reservations.filter(r => {
+    const d = new Date(r.dateTime);
+    return d.getMonth() === month && d.getFullYear() === year && r.status !== 'cancelled';
+  }).length;
+  const prevMonth = reservations.filter(r => {
+    const d = new Date(r.dateTime);
+    return d.getMonth() === ((month - 1 + 12) % 12) && d.getFullYear() === (month === 0 ? year - 1 : year) && r.status !== 'cancelled';
+  }).length;
+  let growth = 0;
+  if (prevMonth > 0) growth = Math.round(((thisMonth - prevMonth) / prevMonth) * 100);
+  else if (thisMonth > 0) growth = 100;
+  document.getElementById('growth-rate').textContent = growth + '%';
+
+  // Services populaires (top 5)
+  const serviceCounts = {};
+  reservations.forEach(r => {
+    if (r.status !== 'cancelled') {
+      const key = r.service;
+      if (!serviceCounts[key]) serviceCounts[key] = { name: r.service, count: 0, revenue: 0 };
+      serviceCounts[key].count++;
+      serviceCounts[key].revenue += Number(r.totalPrice || 0);
+    }
+  });
+  const popularServices = Object.values(serviceCounts).sort((a, b) => b.count - a.count).slice(0, 5);
+  const container = document.getElementById('popular-services');
+  if (container) {
+    container.innerHTML = '';
+    if (popularServices.length === 0) {
+      container.innerHTML = '<p style="text-align: center;">Aucune donnée disponible</p>';
+    } else {
+      popularServices.forEach(service => {
+        const serviceItem = document.createElement('div');
+        serviceItem.className = 'service-item';
+        serviceItem.innerHTML = `
+          <div class="service-icon"><i class="fas fa-cut"></i></div>
+          <div class="service-info">
+            <div class="service-name">${service.name}</div>
+            <div class="service-price">${service.count} réservation${service.count > 1 ? 's' : ''} - ${service.revenue}€</div>
+          </div>
+        `;
+        container.appendChild(serviceItem);
+      });
+    }
+  }
+}
+// Appeler la fonction à l'init
+if (typeof updateDashboardStats === 'function') {
+  document.addEventListener('DOMContentLoaded', updateDashboardStats);
 }
 
 function initCalendar() {
@@ -1828,6 +1848,39 @@ function initModals() {
         });
     });
 }
+
+// === GESTION DES CONTENUS DYNAMIQUES (Firestore) ===
+async function loadSiteContent() {
+  const doc = await firebase.firestore().collection('siteContent').doc('main').get();
+  if (doc.exists) {
+    const data = doc.data();
+    document.getElementById('salon-description').value = data.accueilText || '';
+    document.getElementById('about-text').value = data.aboutText || '';
+    document.getElementById('salon-horaires').value = data.horaires || '';
+    if (data.logoUrl) {
+      document.getElementById('salon-logo-preview').src = data.logoUrl;
+    }
+  }
+}
+
+async function saveSiteContent(e) {
+  e.preventDefault();
+  const accueilText = document.getElementById('salon-description').value;
+  const aboutText = document.getElementById('about-text').value;
+  const horaires = document.getElementById('salon-horaires').value;
+  // Logo géré séparément
+  await firebase.firestore().collection('siteContent').doc('main').set({
+    accueilText, aboutText, horaires
+  }, { merge: true });
+  alert('Contenus enregistrés !');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  if (document.getElementById('site-content-form')) {
+    loadSiteContent();
+    document.getElementById('site-content-form').addEventListener('submit', saveSiteContent);
+  }
+});
 
 // Ajoutez ce code à la fin de votre fichier admin.js
 document.addEventListener('DOMContentLoaded', function() {

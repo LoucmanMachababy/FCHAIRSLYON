@@ -399,22 +399,23 @@ function enhanceMainSiteMobile() {
     }
     
     // Améliorer la grille de services
-    const servicesGrid = document.querySelector('.services-grid');
-    if (servicesGrid) {
+    const femmesGrid = document.getElementById('femmes-services');
+    const hommesGrid = document.getElementById('hommes-services');
+    [femmesGrid, hommesGrid].forEach(servicesGrid => {
+      if (servicesGrid) {
         // Ajouter une animation d'entrée aux cartes
         const serviceCards = servicesGrid.querySelectorAll('.service-card');
         serviceCards.forEach((card, index) => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(20px)';
-            card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-            
-            // Animation séquentielle
-            setTimeout(() => {
-                card.style.opacity = '1';
-                card.style.transform = 'translateY(0)';
-            }, index * 100);
+          card.style.opacity = '0';
+          card.style.transform = 'translateY(20px)';
+          card.style.transition = 'opacity 0.4s cubic-bezier(.4,0,.2,1), transform 0.4s cubic-bezier(.4,0,.2,1)';
+          setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+          }, index * 100);
         });
-    }
+      }
+    });
     
     // Améliorer les réservations
     enhanceReservations();

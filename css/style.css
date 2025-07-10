@@ -1,3 +1,94 @@
+:root {
+  --color-bg: #fff8fc;
+  --color-primary: #4b2067;
+  --color-secondary: #f7c948;
+  --color-accent: #e75480;
+  --color-text: #222;
+  --color-card: #fff;
+  --color-shadow: 0 4px 24px #0002;
+  --color-shadow-hover: 0 8px 32px #0003;
+}
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Poppins', Arial, sans-serif;
+  font-size: 1.1rem;
+  line-height: 1.7;
+}
+h1, .section-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  color: var(--color-primary);
+}
+h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--color-primary);
+}
+h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 0.7rem;
+  color: var(--color-accent);
+}
+p, li {
+  font-size: 1.1rem;
+  margin-bottom: 0.8rem;
+}
+.form-button, .tab-button, button, input[type="submit"] {
+  border-radius: 24px;
+  background: var(--color-accent);
+  color: #fff;
+  padding: 0.7em 2em;
+  font-weight: 600;
+  box-shadow: 0 2px 8px #0001;
+  border: none;
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+  cursor: pointer;
+}
+.form-button:hover, .tab-button:hover, button:hover, input[type="submit"]:hover {
+  background: var(--color-primary);
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 4px 16px #0002;
+}
+.form-button:active, .tab-button:active, button:active, input[type="submit"]:active {
+  background: var(--color-secondary);
+  transform: scale(0.98);
+}
+.service-card {
+  background: var(--color-card);
+  border-radius: 18px;
+  box-shadow: var(--color-shadow);
+  padding: 1.5em;
+  margin: 1em;
+  transition: box-shadow 0.2s, transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.service-card:hover {
+  box-shadow: var(--color-shadow-hover);
+  transform: translateY(-4px) scale(1.02);
+}
+.service-card img {
+  border-radius: 12px;
+  width: 100%;
+  max-width: 220px;
+  margin-bottom: 1em;
+  box-shadow: 0 2px 8px #0001;
+  transition: box-shadow 0.2s;
+}
+.service-card img:hover {
+  box-shadow: 0 8px 32px #0002;
+}
+/* Transitions globales */
+a, .form-button, .tab-button, .service-card, .service-card img {
+  transition: all 0.2s cubic-bezier(.4,0,.2,1);
+}
+/* Suppression du dark mode */
+
 /* === Variables de thème clair === */
 :root {
     --primary: #b44789;
@@ -91,13 +182,6 @@ body, input, select, textarea, button {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-}
-
-body {
-    font-family: 'Poppins', sans-serif;
-    background-color: var(--background);
-    color: var(--secondary);
-    line-height: 1.6;
 }
 
 header {
@@ -1441,37 +1525,75 @@ footer {
 }
 
 @media (max-width: 900px) {
-    .container, .about-section, .reservation-section, .admin-section {
-        padding: 10px 4px;
-        border-radius: 10px;
-    }
-    .card, .service-card, .coiffure-card {
-        border-radius: 10px;
-        padding: 0 0 10px 0;
-    }
-    h1, h2, .section-title {
-        font-size: 1.25rem;
-        margin-bottom: 10px;
-    }
-    h3, h4, h5, h6 {
-        font-size: 1.08rem;
-        margin-bottom: 8px;
-    }
-    p, ul, ol {
-        margin-bottom: 10px;
-        line-height: 1.6;
-        max-width: 98vw;
-        word-break: break-word;
-    }
-    .about-content, .reservation-section, .admin-section {
-        max-width: 100vw;
-        overflow-x: auto;
-    }
-    .about-section h3, .about-section h4, .about-section ul, .about-section p {
-        max-width: 600px;
-        margin-left: auto;
-        margin-right: auto;
-    }
+  .container {
+    padding: 0 0.5em;
+  }
+  .services-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2em;
+    align-items: stretch;
+  }
+  .service-card {
+    max-width: 100%;
+    margin: 0 auto 1.2em auto;
+    padding: 1em;
+  }
+  .service-card img {
+    max-width: 100%;
+    height: auto;
+  }
+  .form-button, .tab-button, button, input[type="submit"] {
+    width: 100%;
+    min-height: 48px;
+    font-size: 1.1rem;
+    margin-bottom: 0.7em;
+  }
+  nav ul {
+    flex-direction: column;
+    gap: 0.5em;
+    padding: 0.5em 0;
+  }
+  nav ul li {
+    width: 100%;
+    text-align: center;
+  }
+  .tabs {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 0.5em;
+    margin-bottom: 1em;
+  }
+  .tab-button {
+    min-width: 120px;
+    font-size: 1rem;
+  }
+  .about-content {
+    flex-direction: column;
+    gap: 1em;
+  }
+  .about-image img {
+    max-width: 100%;
+    height: auto;
+  }
+  .reservation-section, .about-section {
+    padding: 1em 0.2em;
+  }
+  .form-row {
+    flex-direction: column;
+    gap: 0.5em;
+  }
+  .form-group {
+    width: 100%;
+  }
+  .modal-content {
+    width: 98vw;
+    max-width: 420px;
+    padding: 1em;
+  }
+  .logo, .footer-logo {
+    max-width: 90px;
+  }
 }
 
 input::placeholder, textarea::placeholder {
@@ -1701,4 +1823,113 @@ input::placeholder, textarea::placeholder {
 }
 .service-image:hover, .coiffure-card img:hover {
   box-shadow: 0 4px 24px #b4478940;
+}
+
+/* MENU HAMBURGER MOBILE STYLÉ */
+.mobile-menu-toggle {
+  display: none;
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 44px;
+  height: 44px;
+  background: none;
+  border: none;
+  z-index: 2001;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+.mobile-menu-toggle .bar {
+  display: block;
+  width: 28px;
+  height: 4px;
+  margin: 4px 0;
+  background: var(--color-primary, #4b2067);
+  border-radius: 2px;
+  transition: all 0.3s cubic-bezier(.4,0,.2,1);
+}
+.mobile-menu-toggle.open .bar:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+.mobile-menu-toggle.open .bar:nth-child(2) {
+  opacity: 0;
+}
+.mobile-menu-toggle.open .bar:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+}
+.mobile-menu-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(30,0,40,0.65);
+  z-index: 2000;
+  transition: opacity 0.3s;
+}
+.mobile-menu-overlay.active {
+  display: block;
+}
+.mobile-menu {
+  position: fixed;
+  top: 0; left: -260px;
+  width: 240px;
+  height: 100vh;
+  background: var(--color-card, #fff);
+  box-shadow: 2px 0 16px #0002;
+  z-index: 2002;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  padding-top: 80px;
+  transition: left 0.3s cubic-bezier(.4,0,.2,1);
+}
+.mobile-menu.open {
+  left: 0;
+}
+.mobile-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+.mobile-menu li {
+  width: 100%;
+}
+.mobile-menu a {
+  display: block;
+  width: 100%;
+  padding: 1.1em 1.5em;
+  color: var(--color-primary, #4b2067);
+  font-size: 1.15rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 0 24px 24px 0;
+  transition: background 0.2s, color 0.2s;
+}
+.mobile-menu a:hover, .mobile-menu a:active {
+  background: var(--color-accent, #e75480);
+  color: #fff;
+}
+@media (max-width: 900px) {
+  .mobile-menu-toggle {
+    display: flex;
+  }
+  nav {
+    display: none !important;
+  }
+  .mobile-menu {
+    display: flex;
+  }
+}
+@media (min-width: 901px) {
+  .mobile-menu, .mobile-menu-overlay, .mobile-menu-toggle {
+    display: none !important;
+  }
+  nav {
+    display: block !important;
+  }
 }

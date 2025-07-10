@@ -16,17 +16,22 @@
 <body>
     <header>
         <img src="images/logo.png" alt="FcHairsLyon Logo" class="logo">
+        <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Ouvrir le menu">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
         <h1>FcHairsLyon</h1>
         <p>Votre spécialiste de la coiffure afro à Lyon</p>
     </header>
-    
-    <nav>
-        <ul>
-            <li><a href="#services" class="active">Services</a></li>
-            <li><a href="#reservation">Réservation</a></li>
-            <li><a href="#about">À propos</a></li>
-            <li><a href="#admin">Admin</a></li>
-        </ul>
+    <div id="mobile-menu-overlay" class="mobile-menu-overlay"></div>
+    <nav id="mobile-menu" class="mobile-menu">
+      <ul>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#reservation">Réservation</a></li>
+        <li><a href="#about">À propos</a></li>
+        <li><a href="#admin">Admin</a></li>
+      </ul>
     </nav>
     
     <div class="container">
@@ -183,6 +188,8 @@
         </section>
     </div>
     
+    <!-- Section Galerie Slider -->
+    
     <footer>
         <div class="footer-content">
             <img src="images/logo.png" alt="FcHairsLyon Logo" class="footer-logo">
@@ -230,5 +237,32 @@
     <script src="js/firebase-config.js"></script>
     <script src="js/firebase-sync.js"></script>
     <script src="js/display-availability.js"></script>
+    <script>
+      // Menu hamburger mobile stylé
+      document.addEventListener('DOMContentLoaded', function() {
+        const menuBtn = document.getElementById('mobile-menu-toggle');
+        const menu = document.getElementById('mobile-menu');
+        const overlay = document.getElementById('mobile-menu-overlay');
+        if (!menuBtn || !menu || !overlay) return;
+        function openMenu() {
+          menu.classList.add('open');
+          overlay.classList.add('active');
+          menuBtn.classList.add('open');
+        }
+        function closeMenu() {
+          menu.classList.remove('open');
+          overlay.classList.remove('active');
+          menuBtn.classList.remove('open');
+        }
+        menuBtn.addEventListener('click', function() {
+          if (menu.classList.contains('open')) closeMenu();
+          else openMenu();
+        });
+        overlay.addEventListener('click', closeMenu);
+        menu.querySelectorAll('a').forEach(link => {
+          link.addEventListener('click', closeMenu);
+        });
+      });
+    </script>
 </body>
 </html>
