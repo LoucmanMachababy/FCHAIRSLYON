@@ -1,4 +1,12 @@
 // Code pour gérer la connexion à l'interface d'administration
+// === Connexion admin avec identifiants dynamiques ===
+const ADMIN_STORAGE_KEY = 'fchairs_admin_credentials';
+function getAdminCredentials() {
+  const creds = localStorage.getItem(ADMIN_STORAGE_KEY);
+  if (creds) return JSON.parse(creds);
+  return { username: 'admin', password: 'admin123' };
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log("Script admin-login.js chargé");
     const adminLoginForm = document.getElementById('admin-login-form');
@@ -14,23 +22,24 @@ document.addEventListener('DOMContentLoaded', function() {
             event.preventDefault();
             console.log("Soumission du formulaire");
             
-            const username = document.getElementById('username').value;
+            const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
+            const creds = getAdminCredentials();
             
             console.log("Vérification des identifiants");
             // Vérification des identifiants
-            if (username === DEFAULT_USERNAME && password === DEFAULT_PASSWORD) {
+            if (username === creds.username && password === creds.password) {
                 // Identifiants corrects, on stocke l'état de connexion
                 console.log("Identifiants corrects");
                 try {
-                    sessionStorage.setItem('admin-logged-in', 'true');
+                    sessionStorage.setItem('admin-logged-in', '1');
                     console.log("Session stockée:", sessionStorage.getItem('admin-logged-in'));
                     
                     // Redirection vers la page d'administration
                     console.log("Redirection en cours...");
                     
                     // Tentative avec chemin relatif simple
-                    window.location.href = 'admin/admin.html';
+                    window.location.href = 'admin.html';
                 } catch(e) {
                     console.error("Erreur lors de la redirection:", e);
                 }

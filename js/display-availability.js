@@ -8,7 +8,15 @@ async function updateAvailabilityDisplay() {
 
   const dates = Object.keys(data).sort();
 
-  if (dates.length === 0) {
+  // Correction : vérifier s'il y a au moins un créneau disponible
+  let hasSlot = false;
+  dates.forEach(date => {
+    if (Array.isArray(data[date]) && data[date].length > 0) {
+      hasSlot = true;
+    }
+  });
+
+  if (!hasSlot) {
     container.innerHTML = "<p>Aucune disponibilité pour le moment.</p>";
     return;
   }

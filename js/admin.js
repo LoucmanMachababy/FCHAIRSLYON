@@ -2012,3 +2012,45 @@ if (window.displayAllAppointments) {
     addResetButtonToSection('#appointments', 'reset-btn-appointments');
   });
 }
+
+// === GESTION DU COMPTE ADMIN (nom d'utilisateur et mot de passe) ===
+const ADMIN_STORAGE_KEY = 'fchairs_admin_credentials';
+
+function getAdminCredentials() {
+  const creds = localStorage.getItem(ADMIN_STORAGE_KEY);
+  if (creds) return JSON.parse(creds);
+  // Valeurs par défaut si jamais rien n'est stocké
+  return { username: 'admin', password: 'admin123' };
+}
+
+function setAdminCredentials({ username, password }) {
+  localStorage.setItem(ADMIN_STORAGE_KEY, JSON.stringify({ username, password }));
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const adminForm = document.getElementById('admin-form');
+  if (adminForm) {
+    // Pré-remplir le nom d'utilisateur actuel
+    const creds = getAdminCredentials();
+    document.getElementById('admin-username').value = creds.username;
+    adminForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const username = document.getElementById('admin-username').value.trim();
+      const oldPassword = document.getElementById('admin-old-password').value;
+      const newPassword = document.getElementById('admin-new-password').value;
+      const creds = getAdminCredentials();
+      if (oldPassword !== creds.password) {
+        alert('Ancien mot de passe incorrect.');
+        return;
+      }
+      const updatedCreds = {
+        username,
+        password: newPassword ? newPassword : creds.password
+      };
+      setAdminCredentials(updatedCreds);
+      alert('Identifiants administrateur mis à jour !');
+      adminForm.reset();
+      document.getElementById('admin-username').value = updatedCreds.username;
+    });
+  }
+});
