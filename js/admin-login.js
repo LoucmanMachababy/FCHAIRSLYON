@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(() => {
                     // Connexion réussie
                     console.log('Connexion réussie, redirection vers admin/admin.html');
-                    window.location.href = '/admin/admin.html'; // Chemin relatif compatible local et Netlify
+                    window.location.href = 'admin/admin.html'; // Chemin relatif compatible Netlify et local
                 })
                 .catch((error) => {
                     loginError.style.display = 'block';
