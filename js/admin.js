@@ -123,7 +123,7 @@ function initNavigation() {
         if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
             // Dans une application réelle, cela redirigerait vers une page de connexion
             // ou déconnecterait l'utilisateur via une API
-            window.location.href = 'index.html';
+            window.location.href = '../index.html'; // Chemin relatif depuis admin.html
         }
     });
 }
