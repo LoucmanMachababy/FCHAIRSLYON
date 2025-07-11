@@ -23,8 +23,14 @@
         firebase.initializeApp(window.FCHAIRSLYON_FIREBASE_CONFIG);
       }
       const auth = firebase.auth();
+      // Attendre que Firebase soit prêt avant de rediriger
       auth.onAuthStateChanged(function(user) {
-        if (!user) {
+        if (user) {
+          // Utilisateur connecté, on reste sur la page admin
+          console.log('Admin connecté, accès autorisé à admin.html');
+        } else {
+          // Pas connecté, on redirige
+          console.log('Non connecté, redirection vers index.html');
           window.location.href = '../index.html#admin';
         }
       });
