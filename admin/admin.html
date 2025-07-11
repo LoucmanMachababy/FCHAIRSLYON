@@ -15,6 +15,20 @@
     <link rel="stylesheet" href="../css/improved-mobile.css">
 </head>
 <body>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script>
+      if (window.FCHAIRSLYON_FIREBASE_CONFIG) {
+        firebase.initializeApp(window.FCHAIRSLYON_FIREBASE_CONFIG);
+      }
+      const auth = firebase.auth();
+      auth.onAuthStateChanged(function(user) {
+        if (!user) {
+          window.location.href = '../index.html#admin';
+        }
+      });
+    </script>
     <!-- Bouton hamburger pour mobile -->
     <button class="mobile-menu-toggle-admin" aria-label="Ouvrir le menu" style="display:none;">
         <i class="fas fa-bars"></i>
@@ -455,10 +469,13 @@
                     <form id="admin-form">
                         <div class="form-row">
                             <div class="form-group">
-                                <label class="form-label">Nom d'utilisateur</label>
+                                <label for="username">E-mail</label>
                                 <input type="text" class="form-input" id="admin-username" required>
                             </div>
-                            
+                            <div class="form-group">
+                                <label class="form-label">Nouveau e-mail</label>
+                                <input type="email" class="form-input" id="admin-new-email">
+                            </div>
                             <div class="form-group">
                                 <label class="form-label">Ancien mot de passe</label>
                                 <input type="password" class="form-input" id="admin-old-password" required>
@@ -473,6 +490,7 @@
                         </div>
                         
                         <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        <button type="button" class="btn btn-danger" id="delete-account-btn" style="margin-left: 16px;">Supprimer mon compte</button>
                     </form>
                 </div>
             </section>
@@ -677,7 +695,6 @@
     <script src="../js/admin.js"></script>
     <script src="../js/admin-login.js"></script>
     <script src="../js/shared-storage.js"></script>
-    <script src="../js/firebase-config.js"></script>
     <script src="../js/firebase-sync.js"></script>
     <script src="../js/admin-availability.js"></script>
     <script src="../js/mobile-enhancements.js"></script>
