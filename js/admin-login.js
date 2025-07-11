@@ -23,7 +23,8 @@ document.addEventListener('DOMContentLoaded', function() {
             auth.signInWithEmailAndPassword(email, password)
                 .then(() => {
                     // Connexion réussie
-                    window.location.href = 'admin/admin.html'; // Chemin relatif pour Netlify
+                    console.log('Connexion réussie, redirection vers admin/admin.html');
+                    window.location.href = '/admin/admin.html'; // Chemin relatif compatible local et Netlify
                 })
                 .catch((error) => {
                     loginError.style.display = 'block';

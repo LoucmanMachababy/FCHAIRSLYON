@@ -169,7 +169,7 @@
                 <p>Cette section est réservée à l'administration de FcHairsLyon.</p>
                 <form id="admin-login-form" class="login-form">
                     <div class="form-group">
-                        <label for="username" class="form-label">Nom d'utilisateur</label>
+                        <label for="username" class="form-label">E-mail</label>
                         <input type="text" id="username" class="form-input" required>
                     </div>
                     
@@ -226,6 +226,9 @@
         <img id="photo-modal-img" src="" alt="Photo grand format" style="max-width:92vw;max-height:82vh;border-radius:18px;box-shadow:0 8px 32px #000a;background:#fff;z-index:1;">
     </div>
     
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
     <script src="js/emailjs-config.js"></script>
     <script src="js/script.js"></script>
     <script src="js/reservations.js"></script>
@@ -234,7 +237,6 @@
     <script src="js/client-availability.js"></script>
     <script src="js/shared-storage.js"></script>
     <script src="js/mobile-enhancements.js"></script>
-    <script src="js/firebase-config.js"></script>
     <script src="js/firebase-sync.js"></script>
     <script src="js/display-availability.js"></script>
     <script>
