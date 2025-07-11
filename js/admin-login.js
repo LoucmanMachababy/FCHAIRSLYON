@@ -38,8 +38,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Redirection vers la page d'administration
                     console.log("Redirection en cours...");
                     
-                    // Tentative avec chemin relatif simple
-                    window.location.href = 'admin.html';
+                    // Correction du chemin pour Netlify
+                    window.location.href = '/admin/admin.html';
                 } catch(e) {
                     console.error("Erreur lors de la redirection:", e);
                 }
